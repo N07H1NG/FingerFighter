@@ -1,0 +1,54 @@
+{
+    "name": "MyContext",
+    "maps": [
+        {
+            "name": "MyMap",
+            "id": "e69a74a3-5479-4a3e-bc30-149acc744267",
+            "actions": [
+                {
+                    "name": "Finger0",
+                    "type": "Value",
+                    "id": "bb5f6b73-60d0-4864-ac3a-f45b3d15dc16",
+                    "expectedControlType": "Touch",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Finger1",
+                    "type": "Value",
+                    "id": "64119baa-89b2-4016-a62b-3b1dee482e28",
+                    "expectedControlType": "Touch",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "450dd910-bc8c-4a01-b2e7-4765e2dea70d",
+                    "path": "<Touchscreen>/touch0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Finger0",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aa124ae3-62bf-46ed-be51-b6e6633cb583",
+                    "path": "<Touchscreen>/touch1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Finger1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
