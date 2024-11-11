@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.UIElements;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
@@ -14,15 +16,12 @@ using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 public class MyPlayer : MonoBehaviour 
 
 {
-    PlayerInput inp;
-    InputAction finger0action,finger1action;
     Vector2 dir = new Vector2(0,1);
     bool[] down = new bool[2];
     bool[] downdelay = new bool[2];
     Vector2[] pos = new Vector2[2];
     [SerializeField] Transform[] foot;
     [SerializeField] Transform head;
-    bool[] init = new bool[2];
 
     Vector3 cameraCatchPos = Vector3.zero;
     Vector3 cameraCatchLook = Vector3.zero;
@@ -31,10 +30,13 @@ public class MyPlayer : MonoBehaviour
     bool lift = true;
     int main = 0;
     int headTouch;
-    Vector3 HeadTarget =  Vector3.zero;
+    Vector3 HeadPos = new Vector3(0,0,9f);
+    Vector3 HeadTarget;
+    
     bool headControlled = false;
     Dictionary<int,int> footTouches = new Dictionary<int, int>();
 
+    Transform Cam;
 
     void Awake()
     {
@@ -43,7 +45,8 @@ public class MyPlayer : MonoBehaviour
     }
     void Start()
     {
-
+        HeadTarget = HeadPos;
+        Cam = transform.GetChild(0);
         for(int i=0;i<2;i++){
             pos[i] = Vector2.zero;
             down[i] = false;
@@ -54,17 +57,21 @@ public class MyPlayer : MonoBehaviour
     void Update()
     {
         Vector3 center = (foot[0].position+foot[1].position)/2f;
-        transform.position = Vector3.SmoothDamp(transform.position,center,ref cameraCatchPos,1);
+        center.y+=3f;
+        transform.position = Vector3.SmoothDamp(transform.position,center,ref cameraCatchPos,0.3f);
         
         targetForward = -1*(Quaternion.AngleAxis(Vector2.SignedAngle(Vector2.up,dir),Vector3.up)*(foot[0].position-foot[1].position));
         
         transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref cameraCatchLook,0.5f);
 
-        head.localPosition = Vector3.SmoothDamp(head.localPosition,5*HeadTarget+new Vector3(0,7),ref headSpeed,0.5f);
+        head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
+        //head.forward = transform.rotation*HeadTarget;
         
         foreach(Touch touch in Touch.activeTouches){
             HandleTouch(touch);
         }
+
+        MoveHead();
     }
 
     void HandleTouch(Touch touch){
@@ -91,14 +98,13 @@ public class MyPlayer : MonoBehaviour
             if ((touch.touchId == headTouch) || !headControlled){
                 headTouch = touch.touchId;
                 if (touch.phase == TouchPhase.Began){
-                    headControlled = false;
-                    HeadTarget =  Vector3.zero;
+                    HeadTarget = HeadPos;
                 }
                 headControlled = true;
                 HeadAttack(touch);
                 if (touch.phase == TouchPhase.Ended){
                     headControlled = false;
-                    HeadTarget = Vector3.zero;
+                    HeadTarget = HeadPos;
                 }
             }
         }
@@ -175,23 +181,12 @@ public class MyPlayer : MonoBehaviour
 
 
     void HeadAttack(Touch touch){
-        print(touch.delta);
-        HeadTarget += MapDeltaToHeadDirection(touch.delta/20f);
-        print(HeadTarget);
+        HeadTarget = Quaternion.AngleAxis(-1f*touch.delta.y/4f,Vector3.right)*HeadTarget;
+        HeadTarget = Quaternion.AngleAxis(touch.delta.x/4f,Vector3.up)*HeadTarget;
     }
 
-    Vector3 MapDeltaToHeadDirection(Vector2 delta){
-        Vector3 res = Vector3.zero;
-        res.x += delta.x*Math.Clamp(1-Math.Abs(HeadTarget.x),0f,1f);
-        if (delta.y<=0){
-            res.z+=Math.Clamp(1f-HeadTarget.z,0f,1f)*-1*delta.y;
-            res.y+=Math.Clamp(HeadTarget.y+1f,0f,1f)*delta.y;
-        }
-        else{
-            res.z+=Math.Clamp(1f-HeadTarget.z,0f,1f)*delta.y;
-            res.y+=Math.Clamp(-1*HeadTarget.y,0f,1f)*delta.y;
-        }
-        return res;
-    }
 
+    void MoveHead(){
+        HeadTarget = HeadTarget.normalized*Math.Clamp(HeadTarget.magnitude+20f*Time.deltaTime*(headControlled?1f:0f),0,15f);
+    }
 }
