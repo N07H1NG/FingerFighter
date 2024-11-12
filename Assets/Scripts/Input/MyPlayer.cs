@@ -21,16 +21,22 @@ public class MyPlayer : MonoBehaviour
     bool[] downdelay = new bool[2];
     Vector2[] pos = new Vector2[2];
     [SerializeField] Transform[] foot;
+    [SerializeField] Transform[] footTargets;
+    Vector3[] footSpeeds = {Vector3.zero,Vector3.zero};
+    Vector3[] footRots = {Vector3.zero,Vector3.zero};
+    Vector3[]steps = {Vector3.forward,Vector3.forward};
+    Vector3[]stepstarts = {Vector3.zero,Vector3.forward};
     [SerializeField] Transform head;
 
     Vector3 cameraCatchPos = Vector3.zero;
     Vector3 cameraCatchLook = Vector3.zero;
+    
     Vector3 targetForward;
     Vector3 headSpeed =  Vector3.zero;
     bool lift = true;
     int main = 0;
     int headTouch;
-    Vector3 HeadPos = new Vector3(0,0,9f);
+    Vector3 HeadPos = new Vector3(0,0,4f);
     Vector3 HeadTarget;
     
     bool headControlled = false;
@@ -43,8 +49,25 @@ public class MyPlayer : MonoBehaviour
 
         EnhancedTouchSupport.Enable();
     }
+
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
+    void OnEnable()
+    {
+        EnhancedTouchSupport.Enable();
+    }
+
+    /// <summary>
+    /// This function is called when the behaviour becomes disabled or inactive.
+    /// </summary>
+    void OnDisable()
+    {
+        EnhancedTouchSupport.Disable();
+    }
     void Start()
     {
+        
         HeadTarget = HeadPos;
         Cam = transform.GetChild(0);
         for(int i=0;i<2;i++){
@@ -56,15 +79,19 @@ public class MyPlayer : MonoBehaviour
     }
     void Update()
     {
-        Vector3 center = (foot[0].position+foot[1].position)/2f;
-        center.y+=3f;
-        transform.position = Vector3.SmoothDamp(transform.position,center,ref cameraCatchPos,0.3f);
+        bool[] truedown = {down[0]||downdelay[0],down[1],downdelay[1]};
+        Vector3 center = (foot[0].position*(truedown[0]?5f:1f)+foot[1].position*(truedown[1]?5f:1f))/((truedown[0]?5f:1f)+(truedown[1]?5f:1f));
+        center.y+=3.2f+((truedown[0]?0f:0.8f)+(truedown[1]?0f:0.8f))- (foot[0].position-foot[1].position).magnitude/6f;
+        //center += steps[0]/15f+steps[1]/15f;
         
         targetForward = -1*(Quaternion.AngleAxis(Vector2.SignedAngle(Vector2.up,dir),Vector3.up)*(foot[0].position-foot[1].position));
         
         transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref cameraCatchLook,0.5f);
 
+        transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref cameraCatchPos,0.3f);
+
         head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
+        head.up = head.position-transform.position;
         //head.forward = transform.rotation*HeadTarget;
         
         foreach(Touch touch in Touch.activeTouches){
@@ -72,14 +99,23 @@ public class MyPlayer : MonoBehaviour
         }
 
         MoveHead();
+
+        for(int i = 0;i<2;i++){
+            Vector3 temptarget = truedown[i]?foot[i].position:transform.position+(foot[i].position-transform.position)/2.5f+Vector3.down/2f;
+            footTargets[i].position = Vector3.SmoothDamp(footTargets[i].position,temptarget,ref footSpeeds[i],0.15f);
+            Vector3 attempted_dir = Vector3.ProjectOnPlane(steps[i]+transform.forward*2,Vector3.up).normalized;
+            attempted_dir = (Vector3.Dot(attempted_dir,transform.forward.normalized)>=-0.5f)?attempted_dir:attempted_dir*-1f;
+            footTargets[i].forward = Vector3.SmoothDamp(footTargets[i].forward,attempted_dir,ref footRots[i],0.3f);
+        }
     }
 
     void HandleTouch(Touch touch){
-        if (touch.screenPosition.x>=Screen.width/2 || footTouches.Keys.Contains(touch.touchId))
+        if ((touch.screenPosition.x>=Screen.width/2 && (touch.touchId != headTouch||!headControlled) )|| footTouches.Keys.Contains(touch.touchId))
         {
             if (footTouches.Keys.Contains(touch.touchId)){
                 Finger(footTouches[touch.touchId],touch);
-                if (touch.phase == TouchPhase.Ended){
+                if (touch.phase == TouchPhase.Ended|| touch.phase == TouchPhase.Canceled){
+                    
                     footTouches.Remove(touch.touchId);
                 }
             }
@@ -91,7 +127,7 @@ public class MyPlayer : MonoBehaviour
                 
             }
             else{
-                print("losing");
+                Debug.Log("Excess touches");
             }
         }
         else{
@@ -102,7 +138,8 @@ public class MyPlayer : MonoBehaviour
                 }
                 headControlled = true;
                 HeadAttack(touch);
-                if (touch.phase == TouchPhase.Ended){
+                if (touch.phase == TouchPhase.Ended|| touch.phase == TouchPhase.Canceled){
+                    
                     headControlled = false;
                     HeadTarget = HeadPos;
                 }
@@ -119,9 +156,10 @@ public class MyPlayer : MonoBehaviour
         Vector2 newdir = (pos[1-f]-t.screenPosition)*MathF.Pow(-1,f);
         
         float turn = Vector2.SignedAngle(dir,newdir);
-        //print(dir+ " "+newdir+" "+turn);
+        
         Quaternion turnQ = Quaternion.AngleAxis(-1*turn, Vector3.up);
-        if(t.phase == TouchPhase.Ended){
+        if(t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled){
+            stepstarts[f] = foot[f].position;
             down[f] = false;
             if (!down[1-f]){
                 main=1-f;
@@ -138,17 +176,20 @@ public class MyPlayer : MonoBehaviour
             main = 1-f;
             if(down[1-f] || downdelay[1-f]){
                 if(!lift){
-                    foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*newdir.magnitude/70;
+                    foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*newdir.magnitude/(Screen.dpi*0.5f);
+                    steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                 }
                 else{
-                    foot[f].position = foot[1-f].position + (foot[f].position - foot[1-f].position).normalized*newdir.magnitude/70;
+                    print("liftend");
+                    foot[f].position = foot[1-f].position + (stepstarts[f] - foot[1-f].position).normalized*newdir.magnitude/(Screen.dpi*0.5f);
+                    steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                     lift = false;
                 }
             }
             else{
-                
+                foot[f].position = stepstarts[f];
                 
             }
             StopAllCoroutines();
@@ -160,6 +201,16 @@ public class MyPlayer : MonoBehaviour
 
                 dir = newdir;
             }
+            else{
+                Vector2 estimatedpos = pos[1-f]+(pos[f]-t.screenPosition);
+                Vector2 estimated_dir = (estimatedpos-t.screenPosition)*MathF.Pow(-1,f);
+                float estimatedturn = Vector2.SignedAngle(dir,estimated_dir);
+                Quaternion estimatedturnQ = Quaternion.AngleAxis(-1*estimatedturn, Vector3.up);
+                foot[1-f].position = foot[f].position + estimatedturnQ*(foot[1-f].position - foot[f].position).normalized*estimated_dir.magnitude/(Screen.dpi*0.5f);
+                steps[1-f] = foot[1-f].position-stepstarts[1-f];
+                dir = estimated_dir;
+                pos[1-f] = estimatedpos;
+            }
         }
         
         pos[f] = t.screenPosition;
@@ -167,26 +218,28 @@ public class MyPlayer : MonoBehaviour
     }
 
     IEnumerator liftDelay(int f){
-        print("delay started");
+        
         downdelay[f] = true;
         yield return new WaitForSeconds(0.1f);
-        print("delay_ended");
+        
         downdelay[f] = false;
         if (!(down[0] || down[1])){
-            print("lift" + down[0] + " " + down[1]);
-            
+            print("LIFT");
             lift = true;
         }
     }
 
 
     void HeadAttack(Touch touch){
-        HeadTarget = Quaternion.AngleAxis(-1f*touch.delta.y/4f,Vector3.right)*HeadTarget;
-        HeadTarget = Quaternion.AngleAxis(touch.delta.x/4f,Vector3.up)*HeadTarget;
+        Vector2 d = 20f*touch.delta/(Screen.dpi*0.5f);
+        HeadTarget = Quaternion.AngleAxis(-1f*d.y,Vector3.right)*HeadTarget;
+        HeadTarget = Quaternion.AngleAxis(d.x,Vector3.up)*HeadTarget;
     }
 
 
     void MoveHead(){
-        HeadTarget = HeadTarget.normalized*Math.Clamp(HeadTarget.magnitude+20f*Time.deltaTime*(headControlled?1f:0f),0,15f);
+        HeadTarget = HeadTarget.normalized*Math.Clamp(HeadTarget.magnitude+20f*Time.deltaTime*(headControlled?1f:0f),0,9f);
+        HeadTarget.y = Math.Clamp(HeadTarget.y,-5.5f,7.5f);
+        
     }
 }
