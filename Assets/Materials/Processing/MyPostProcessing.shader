@@ -30,13 +30,15 @@ Shader "Hidden/MyPostProcessing"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float4 view : TEXCOORD1;
             };
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                o.uv = v.uv; 
+                o.view = float4(UnityObjectToViewPos(v.vertex),1);
                 return o;
             }
 
@@ -49,6 +51,7 @@ Shader "Hidden/MyPostProcessing"
 
             fixed4 frag (v2f i) : COLOR
             {
+                //return i.view;
                 float halfScaleFloor = floor(_Scale * 0.5);
                 float halfScaleCeil = ceil(_Scale * 0.5);
                 
@@ -87,15 +90,18 @@ Shader "Hidden/MyPostProcessing"
                 float3 normalFiniteDifference1 = normalValuesTR - normalValuesBL;
 
                 float edgeNormal = sqrt(dot(normalFiniteDifference0, normalFiniteDifference0) + dot(normalFiniteDifference1, normalFiniteDifference1));
-                edgeNormal = edgeNormal > _NormalThreshold ? 1 : 0;
-                return edgeNormal;
+                bool edgeNormalBool = edgeNormal > _NormalThreshold ? 1 : 0;
+                
+                
                 float depthFiniteDifference0 = depthValueBL - depthValueTR;
                 float depthFiniteDifference1 = depthValueBR - depthValueTL;
                 float edgeDepth = sqrt(pow(depthFiniteDifference0, 2) + pow(depthFiniteDifference1, 2)) * 100;
+                //edgeDepth = edgeDepth>_DepthThreshold*depth;
+                bool edgeDepthBool = edgeDepth>_DepthThreshold*depth;
+
+                //UnityViewToClipPos
                 
-                
-                
-                return edgeDepth>_DepthThreshold*depth;
+                return max(edgeDepthBool,edgeNormalBool);
                 
             }
             ENDCG
