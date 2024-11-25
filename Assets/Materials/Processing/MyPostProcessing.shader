@@ -4,6 +4,7 @@ Shader "Hidden/MyPostProcessing"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Scale("Scale",Float) = 1.0
+        _OutlineColor("Outline",Color) = (1,1,1,1)
         _DepthThreshold("Threshold", Float) = 1.0
         _NormalThreshold("Normal Threshold", Float) = 1.0
     }
@@ -48,10 +49,12 @@ Shader "Hidden/MyPostProcessing"
             float _Scale;
             float _DepthThreshold;
             float _NormalThreshold;
+            float4 _OutlineColor;
 
             fixed4 frag (v2f i) : COLOR
             {
                 //return i.view;
+                
                 float halfScaleFloor = floor(_Scale * 0.5);
                 float halfScaleCeil = ceil(_Scale * 0.5);
                 
@@ -100,8 +103,8 @@ Shader "Hidden/MyPostProcessing"
                 bool edgeDepthBool = edgeDepth>_DepthThreshold*depth;
 
                 //UnityViewToClipPos
-                
-                return max(edgeDepthBool,edgeNormalBool);
+                float mask = 1- max(edgeDepthBool,edgeNormalBool);
+                return mask*col+(1-mask)*_OutlineColor;
                 
             }
             ENDCG

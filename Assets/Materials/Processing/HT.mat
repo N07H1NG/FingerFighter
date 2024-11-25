@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BG:
-        m_Texture: {fileID: 2800000, guid: 854d96c38a8694b45b2f85c2a0d77675, type: 3}
+        m_Texture: {fileID: 2800000, guid: fd89700fd3e54af40a0c0b78988c330e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -56,7 +56,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Noise:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 714aaf99a0df8254ba9247c3322237c4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -70,10 +70,10 @@ Material:
     m_Ints: []
     m_Floats:
     - _Angle: -0.8
-    - _Angle1: 31.3
-    - _Angle2: 14.51
-    - _Angle3: 22.7
-    - _Angle4: 34.4
+    - _Angle1: 0.74
+    - _Angle2: 0.16
+    - _Angle3: 3.84
+    - _Angle4: 163
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DepthThreshold: 2.8
@@ -84,24 +84,25 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NoiseScale: -5.38
+    - _NoiseScale: 0
     - _NormalThreshold: 0.9
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Scale: 6
+    - _Scale: 8
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Black: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 1}
+    - _Black: {r: 0.09611549, g: 0.08659667, b: 0.13207549, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color1: {r: 1, g: 0.9927627, b: 0, a: 1}
     - _Color2: {r: 0, g: 1, b: 0.9051864, a: 1}
     - _Color3: {r: 1, g: 0, b: 0.98475456, a: 1}
-    - _Cyan: {r: 0, g: 1, b: 0.9620137, a: 1}
+    - _Cyan: {r: 0, g: 0.7534961, b: 0.8773585, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Magenta: {r: 0.9528302, g: 0, b: 0.8507416, a: 1}
-    - _Yellow: {r: 0.986, g: 1, b: 0, a: 1}
+    - _Magenta: {r: 0.8867924, g: 0, b: 0.7755087, a: 1}
+    - _Offset: {r: -0.001, g: 0.002, b: 0, a: 0}
+    - _Yellow: {r: 0.8773585, g: 0.7741399, b: 0, a: 1}
   m_BuildTextureStacks: []

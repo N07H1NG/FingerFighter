@@ -15,6 +15,8 @@ Shader "Hidden/MyPostProcessing"
         _Black("Black Ink", Color) = (0,0,0,1)
         _Noise("Noise Texture", 2D) = "white" {}
 
+    
+
         _NoiseScale("Noise Scale",Float) = 1.0
     }
     SubShader
@@ -29,6 +31,8 @@ Shader "Hidden/MyPostProcessing"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+
+            static const float PI = 3.14159265f;
 
             struct appdata
             {
@@ -78,10 +82,38 @@ Shader "Hidden/MyPostProcessing"
             float4 _Magenta;
             float4 _Yellow;
             float4 _Black;
+            
+
+            float remapdist(float r){
+                if (r <= 0.5){
+                    //return 0;
+                    return PI * r*r;
+                }
+                if (r > sqrt(2)/2){
+                    return 1;
+                }
+                //return 0;
+                float cosa = 0.5/r;
+                float angle = 2 * acos(cosa);
+                float segm = (1.0/2) * (r*r) * (angle - sin(angle));
+                float area = PI * r*r - 4 * segm;
+                return area;
+            }
 
             float4 frag (v2f i) : COLOR
             {
-                float4 col = tex2D(_MainTex,i.uv);
+                float4 noise = tex2D(_Noise,i.vertex.xy/512);
+                
+                noise.w = pow(noise.w,2);
+                noise = pow(noise,8)*_NoiseScale;
+                
+                //return float4(1,1,1,1)+noise.w;\
+                
+
+                float4 col = tex2D(_MainTex,i.uv+float2(0.001,-0.0003));
+                float4 col2 = tex2D(_MainTex,i.uv+float2(-0.002,0));
+                float4 col3 = tex2D(_MainTex,i.uv+float2(0.001,0.003));
+                float4 col4 = tex2D(_MainTex,i.uv);
                 float4 bg = tex2D(_BG,i.vertex.xy/512);
                 float2x2 rot1 = {cos(_Angle1),sin(_Angle1),-1*sin(_Angle1),cos(_Angle1)};
                 float2x2 rot2 = {cos(_Angle2),sin(_Angle2),-1*sin(_Angle2),cos(_Angle2)};
@@ -91,26 +123,42 @@ Shader "Hidden/MyPostProcessing"
                 float2 prikol2 = mul(rot2,i.vertex.xy);
                 float2 prikol3 = mul(rot3,i.vertex.xy);
                 float2 prikol4 = mul(rot4,i.vertex.xy);
+                
                 prikol1 = frac(prikol1/_Scale)*2-1;
                 prikol2 = frac(prikol2/_Scale)*2-1;
                 prikol3 = frac(prikol3/_Scale)*2-1;
                 prikol4 = frac(prikol4/_Scale)*2-1;
-                //return col;
-                float dist1 = length(prikol1)/sqrt(1.9);
-                float dist2 = length(prikol2)/sqrt(1.9);
-                float dist3 = length(prikol3)/sqrt(1.9);
-                float dist4 = length(prikol4)/sqrt(1.9);
+                
+                float dist1 = length(prikol1);
+                float dist2 = length(prikol2);
+                float dist3 = length(prikol3);
+                float dist4 = length(prikol4);
+                //return dist1>=sqrt(2);
+                //return dist1<sqrt(2);
+                dist1 = remapdist(dist1/2);
+                dist2 = remapdist(dist2/2);
+                dist3 = remapdist(dist3/2);
+                dist4 = remapdist(dist4/2);
+                //dist2 = remapdist(dist2/2);
+                //dist3 = remapdist(dist3/2);
+                //dist4 = remapdist(dist4/2);
                 float4 cmyk = RGBtoCMYK(col.xyz);
-                //return dist4;
-                cmyk = saturate(float4(cmyk.x>dist1,cmyk.y>dist2,cmyk.z>dist3,cmyk.w>dist4));
-                //return float4(1,1,1,1) + cmyk.x*float4(-1,0,0,0);
-                //bg = bg -cmyk.w*(bg-_Black);
-                //return bg;
-                //float4 colorsum = cmyk.x*(_Cyan) +cmyk.y*(_Magenta) +cmyk.z*(_Yellow);
-                //return bg;
-                float4 removal = -cmyk.w*(bg-_Black)- cmyk.x*(bg-_Cyan) -cmyk.y*(bg-_Magenta) -cmyk.z*(bg-_Yellow);
-
-                return bg + removal;
+                float4 cmyk2 = RGBtoCMYK(col2.xyz);
+                float4 cmyk3 = RGBtoCMYK(col3.xyz);
+                float4 cmyk4 = RGBtoCMYK(col4.xyz);
+                //return dist1>=0.99;
+                cmyk = float4(cmyk.x,cmyk2.y,cmyk3.z,cmyk4.w);
+                //return dist1>=1;
+                cmyk = saturate(float4(cmyk.x+noise.x>dist1,cmyk.y+noise.y>dist2,cmyk.z+noise.z>dist3,cmyk.w+noise.w>dist4)); //IMPORTASNT!!
+                //return cmyk.w;
+                return bg-(cmyk.w*(bg-_Black)+cmyk.x*(bg-_Cyan) + cmyk.y*(bg-_Magenta) + cmyk.z*(bg-_Yellow));
+                
+                //return float4(1,1,1,1)-cmyk.w*(float4(1.1,1.1,1.1,1.1)-_Black) - cmyk.x*(float4(1,1,1,1)-_Cyan) - cmyk.y*(float4(1,1,1,1)-_Magenta) - cmyk.z*(float4(1,1,1,1)-_Yellow);
+                
+                
+                float4 removal = 1-(cmyk.w*(1-_Black)+cmyk.x*(1-_Cyan) + cmyk.y*(1-_Magenta) + cmyk.z*(1-_Yellow));
+                float ink = saturate((cmyk.w+cmyk.x+cmyk.y+cmyk.z));
+                return bg*(1-ink)+ink*removal;
                 bg = bg-cmyk.w*(bg-_Black)- cmyk.x*(bg-_Cyan) -cmyk.y*(bg-_Magenta) -cmyk.z*(bg-_Yellow);
                 bg=  bg-cmyk.x*(bg-_Cyan);
                 bg=  bg-cmyk.y*(bg-_Magenta);
@@ -125,5 +173,7 @@ Shader "Hidden/MyPostProcessing"
             }
             ENDCG
         }
+
+        
     }
 }

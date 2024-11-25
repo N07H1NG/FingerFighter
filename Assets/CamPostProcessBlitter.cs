@@ -7,6 +7,12 @@ using UnityEngine.UI;
 public class CamPostProcessBlitter : MonoBehaviour
 {
     public Material pp;
+
+    public Material ppLayer;
+    public float aboba;
+
+    RenderTexture tempSrc;
+    
     void Start()
     {
         GetComponent<Camera>().depthTextureMode = DepthTextureMode.DepthNormals;
@@ -15,7 +21,10 @@ public class CamPostProcessBlitter : MonoBehaviour
     
     void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        Graphics.Blit(src,dest,pp);
+        tempSrc = RenderTexture.GetTemporary (src.width, src.height, src.depth, src.format);
+        Graphics.Blit(src,tempSrc,pp);
+        Graphics.Blit(tempSrc,dest,ppLayer);
+        RenderTexture.ReleaseTemporary (tempSrc);
     }
    
     
