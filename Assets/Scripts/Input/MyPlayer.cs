@@ -17,9 +17,9 @@ using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 public class MyPlayer : MonoBehaviour 
 
 {
-    float calibration_timer = 0;
+    
     Vector2 minmax = Vector2.zero;
-    float avgdelta = 0;
+    
     bool calibrated = false;
     float screenScaler;
     Vector2 dir = new Vector2(0,1);
@@ -244,21 +244,30 @@ public class MyPlayer : MonoBehaviour
 
     void HeadAttack(Touch touch){
         
-        Vector2 d = 20f*touch.delta/minmax[0];
+        Vector2 d = 50f*touch.delta/minmax[0];
         HeadTarget = Quaternion.AngleAxis(-1f*d.y,Vector3.right)*HeadTarget;
         HeadTarget = Quaternion.AngleAxis(d.x,Vector3.up)*HeadTarget;
     }
 
 
     void MoveHead(){
-        HeadTarget = HeadTarget.normalized*Math.Clamp(HeadTarget.magnitude+20f*Time.deltaTime*(headControlled?1f:0f),0,9f);
-        HeadTarget.y = Math.Clamp(HeadTarget.y,-5.5f,7.5f);
+        HeadTarget = HeadTarget.normalized*Math.Clamp(HeadTarget.magnitude+10f*Time.deltaTime*(headControlled?1f:0f),0,8.5f);
+        HeadTarget.y = Math.Clamp(HeadTarget.y,-5.5f,8.5f);
         
     }
 
     IEnumerator Calibration(){
-        while(calibration_timer<5f){
+        bool down =false;
+        int count = 0;
+        float calibration_timer = 0f;
+        while(calibration_timer<2f||count<3||down||minmax[0]>=minmax[1]/2f){
             if ((Touch.activeTouches.Count)==2){
+                if (!down){
+                    down = true;
+                    count +=1;
+                }
+                
+                
                 calibration_timer+=Time.deltaTime;
                 float d =(Touch.activeTouches[0].screenPosition - Touch.activeTouches[1].screenPosition).magnitude;
                 if (d<minmax[0]||minmax[0]==0){
@@ -268,6 +277,9 @@ public class MyPlayer : MonoBehaviour
                     minmax[1] = d;
                 }
             }
+            else{
+                down = false;
+            }
             yield return null;
         }    
         calibrated = true;
@@ -276,6 +288,6 @@ public class MyPlayer : MonoBehaviour
     float ScaleScreenDistance(float d){
         float p = (d-minmax[0])/(minmax[1]-minmax[0]);
         
-        return math.lerp(0.8f,7f,p);
+        return math.lerp(0.8f,9f,p);
     }
 }

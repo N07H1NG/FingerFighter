@@ -15,14 +15,15 @@ Shader "Custom/Staand"
     SubShader
     {
         Stencil{
-            ref 1
+            ref 0
             comp always
             pass replace
         }
         Pass
         {
-
             
+            
+            //ZTest Greater
             Cull Front
             CGPROGRAM
             #pragma vertex vert
@@ -71,16 +72,16 @@ Shader "Custom/Staand"
             }
             ENDCG
         }
-
+        
         Stencil{
-            ref 1
+            ref 0
             comp equal
-            pass replace
+            pass keep
         }
         
         Tags { "RenderType"="Opaque" }
         LOD 200
-
+        
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
         #pragma surface surf Standard fullforwardshadows
