@@ -17,6 +17,7 @@ using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 public class MyPlayer : MonoBehaviour 
 
 {
+    float calibration_timer = 0;
     Vector2 minmax = Vector2.zero;
     float avgdelta = 0;
     bool calibrated = false;
@@ -117,19 +118,6 @@ public class MyPlayer : MonoBehaviour
                 attempted_dir = (Vector3.Dot(attempted_dir,transform.forward.normalized)>=-0.5f)?attempted_dir:attempted_dir*-1f;
                 footTargets[i].forward = Vector3.SmoothDamp(footTargets[i].forward,attempted_dir,ref footRots[i],0.3f);
             }
-        }
-        else{
-            print(minmax);
-            if ((Touch.activeTouches.Count)==2){
-                float d =(Touch.activeTouches[0].screenPosition - Touch.activeTouches[1].screenPosition).magnitude;
-                if (d<minmax[0]||minmax[0]==0){
-                    minmax[0] = d;
-                }
-                if (d>minmax[1]||minmax[1]==0){
-                    minmax[1] = d;
-                }
-            }
-            
         }
     }
 
@@ -269,7 +257,19 @@ public class MyPlayer : MonoBehaviour
     }
 
     IEnumerator Calibration(){
-        yield return new WaitForSeconds(12f);
+        while(calibration_timer<5f){
+            if ((Touch.activeTouches.Count)==2){
+                calibration_timer+=Time.deltaTime;
+                float d =(Touch.activeTouches[0].screenPosition - Touch.activeTouches[1].screenPosition).magnitude;
+                if (d<minmax[0]||minmax[0]==0){
+                    minmax[0] = d;
+                }
+                if (d>minmax[1]||minmax[1]==0){
+                    minmax[1] = d;
+                }
+            }
+            yield return null;
+        }    
         calibrated = true;
     }
 

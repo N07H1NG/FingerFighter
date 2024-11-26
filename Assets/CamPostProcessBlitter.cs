@@ -21,10 +21,10 @@ public class CamPostProcessBlitter : MonoBehaviour
     
     void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        tempSrc = RenderTexture.GetTemporary (src.width, src.height, src.depth, src.format);
-        Graphics.Blit(src,tempSrc,pp);
-        Graphics.Blit(tempSrc,dest,ppLayer);
-        RenderTexture.ReleaseTemporary (tempSrc);
+        //tempSrc = RenderTexture.GetTemporary (src.width, src.height, src.depth, src.format);
+        //Graphics.Blit(src,tempSrc,pp);
+        Graphics.Blit(src,dest,ppLayer);
+        //RenderTexture.ReleaseTemporary (tempSrc);
     }
    
     
