@@ -46,13 +46,15 @@ public class MyPlayer : MonoBehaviour
 
     int last_step=0;
     float just_stepped=0;
+    float just_upped=0;
     Vector3 HeadPos = new Vector3(0,0,4f);
     Vector3 HeadTarget;
     
     bool headControlled = false;
     Dictionary<int,int> footTouches = new Dictionary<int, int>();
 
-    Transform Cam;
+    public Transform Cam;
+    
     AudioSource audioSrc;
     public MyAudioCue cue;
 
@@ -83,7 +85,7 @@ public class MyPlayer : MonoBehaviour
         audioSrc = GetComponent<AudioSource>();
         popickAnimator = GetComponentInChildren<Animator>();
         HeadTarget = HeadPos;
-        Cam = transform.GetChild(0);
+        
         for(int i=0;i<2;i++){
             pos[i] = Vector2.zero;
             down[i] = false;
@@ -95,16 +97,28 @@ public class MyPlayer : MonoBehaviour
     void Update()
     {
         popickAnimator.SetBool("suck",headControlled);
-        print(popickAnimator.GetBool("suck"));
+        
         if (calibrated){
             time_since_last_step+=Time.deltaTime;
             bool[] truedown = {down[0]||downdelay[0],down[1],downdelay[1]};
             Vector3 center = (foot[0].position*(truedown[0]?5f:1f)+foot[1].position*(truedown[1]?5f:1f))/((truedown[0]?5f:1f)+(truedown[1]?5f:1f));
             center = (4f*center + foot[last_step].position*(truedown[last_step]?just_stepped:0f))/(4f+(truedown[last_step]?just_stepped:0f));
-            center.y-=just_stepped/3f;
-            if (just_stepped>0){
-                just_stepped = math.max(just_stepped-4f*Time.deltaTime,0f);
+            if (time_since_last_step<last_step_time/3){
+                center.y-=just_stepped/2f;
+                
+            
             }
+            else{
+                center.y+=just_upped/2f;
+                
+            }
+            if (just_stepped>0){
+                just_stepped = math.max(just_stepped-7f*Time.deltaTime,0f);
+            }
+            if (just_upped>0){
+                just_upped = math.max(just_upped-7f*Time.deltaTime,0f);
+            }
+            
             center.y+=3.2f+((truedown[0]?0f:0.8f)+(truedown[1]?0f:0.8f))- (foot[0].position-foot[1].position).magnitude/6f;
             //center += steps[0]/15f+steps[1]/15f;
 
@@ -114,11 +128,12 @@ public class MyPlayer : MonoBehaviour
 
             
             cameraCatchPos.y *= (1f+2f*Time.deltaTime*just_stepped*math.clamp(0.5f/last_step_time,1f,3f));   
-            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref cameraCatchPos,0.3f-0.05f*just_stepped);
+            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref cameraCatchPos,0.25f);
 
             head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
+            Cam.forward = transform.forward+head.up-Vector3.up;
 
             foreach(Touch touch in Touch.activeTouches){
                 HandleTouch(touch);
@@ -129,8 +144,11 @@ public class MyPlayer : MonoBehaviour
             for(int i = 0;i<2;i++){
                 Vector3 temptarget = truedown[i]?foot[i].position:transform.position+(foot[i].position-transform.position)/2.5f+Vector3.down/2f;
                 footTargets[i].position = Vector3.SmoothDamp(footTargets[i].position,temptarget,ref footSpeeds[i],0.15f);
-                Vector3 attempted_dir = Vector3.ProjectOnPlane(steps[i]+transform.forward*2,Vector3.up).normalized;
-                attempted_dir = (Vector3.Dot(attempted_dir,transform.forward.normalized)>=-0.5f)?attempted_dir:attempted_dir*-1f;
+                Vector3 attempted_dir =(footTargets[i].position-center).normalized+steps[i]+2*transform.forward;
+                attempted_dir.y=0;
+                attempted_dir.Normalize();
+                
+                attempted_dir = (Vector3.Dot(attempted_dir,transform.forward)>=-0.3f)?attempted_dir:attempted_dir*-1f;
                 footTargets[i].forward = Vector3.SmoothDamp(footTargets[i].forward,attempted_dir,ref footRots[i],0.3f);
             }
         }
@@ -188,6 +206,7 @@ public class MyPlayer : MonoBehaviour
         if(t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled){
             stepstarts[f] = foot[f].position;
             down[f] = false;
+            just_upped = 3f;
             if (!down[1-f]){
                 main=1-f;
                 StartCoroutine(liftDelay(f));
@@ -201,6 +220,12 @@ public class MyPlayer : MonoBehaviour
         }else if(t.phase == TouchPhase.Began){
             audioSrc.PlayOneShot(cue.GetRandomClip());
             down[f] = true;
+            if (f==0){
+                popickAnimator.SetTrigger("step_l");
+            }
+            else{
+                popickAnimator.SetTrigger("step_r");
+            }
             main = 1-f;
             if(down[1-f] || downdelay[1-f]){
                 just_stepped = 3f;

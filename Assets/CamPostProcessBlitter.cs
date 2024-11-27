@@ -13,12 +13,16 @@ public class CamPostProcessBlitter : MonoBehaviour
 
     RenderTexture tempSrc;
     Camera cam;
-    Matrix4x4 cToV = Matrix4x4.identity;
+    Vector3 speed = Vector3.zero;
+    Vector3 rotspeed = Vector3.zero;
+    [SerializeField] Transform target;
+
     
     void Start()
     {
         cam = GetComponent<Camera>();
         cam.depthTextureMode = DepthTextureMode.DepthNormals;
+        
     }
 
     /// <summary>
@@ -27,7 +31,8 @@ public class CamPostProcessBlitter : MonoBehaviour
     
     void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        
+        transform.position = Vector3.SmoothDamp(transform.position,target.position,ref speed,0.2f);
+        transform.forward = Vector3.SmoothDamp(transform.forward,target.forward,ref rotspeed,0.2f);
         
         //tempSrc = RenderTexture.GetTemporary (src.width, src.height, src.depth, src.format);
         //Graphics.Blit(src,tempSrc,pp);
