@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7019311d649a24298f569d507d69f9, type: 3}
+  m_Name: StepQue
+  m_EditorClassIdentifier: 
+  containClips:
+  - {fileID: 8300000, guid: 32d172ad9ff1c674084f64ac42623903, type: 3}
+  - {fileID: 8300000, guid: c349a2b5777012149a849cec13277594, type: 3}
+  - {fileID: 8300000, guid: e303e8a485d56d04a8d2c0363e36962d, type: 3}
+  - {fileID: 8300000, guid: d5dfdf1f29d12e14ea3302de55bfa468, type: 3}
+  - {fileID: 8300000, guid: 60cc2441499d95449906f6b705568bf9, type: 3}
+  - {fileID: 8300000, guid: 0f601655af9d7324b8926e4a9a00faf1, type: 3}
+  - {fileID: 8300000, guid: 9d227decaf4fce642902b3a2419889e8, type: 3}
+  - {fileID: 8300000, guid: 810e7a2c55b3cfa4b87679da0f6fadf4, type: 3}

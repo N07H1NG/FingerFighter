@@ -19,7 +19,8 @@ public class MyPlayer : MonoBehaviour
 {
     
     Vector2 minmax = Vector2.zero;
-    
+    float time_since_last_step=0f;
+    float last_step_time=0f;
     bool calibrated = false;
     float screenScaler;
     Vector2 dir = new Vector2(0,1);
@@ -36,12 +37,15 @@ public class MyPlayer : MonoBehaviour
 
     Vector3 cameraCatchPos = Vector3.zero;
     Vector3 cameraCatchLook = Vector3.zero;
-    
+    Animator popickAnimator;
     Vector3 targetForward;
     Vector3 headSpeed =  Vector3.zero;
     bool lift = true;
     int main = 0;
     int headTouch;
+
+    int last_step=0;
+    float just_stepped=0;
     Vector3 HeadPos = new Vector3(0,0,4f);
     Vector3 HeadTarget;
     
@@ -49,6 +53,8 @@ public class MyPlayer : MonoBehaviour
     Dictionary<int,int> footTouches = new Dictionary<int, int>();
 
     Transform Cam;
+    AudioSource audioSrc;
+    public MyAudioCue cue;
 
     void Awake()
     {
@@ -74,7 +80,8 @@ public class MyPlayer : MonoBehaviour
     }
     void Start()
     {
-        
+        audioSrc = GetComponent<AudioSource>();
+        popickAnimator = GetComponentInChildren<Animator>();
         HeadTarget = HeadPos;
         Cam = transform.GetChild(0);
         for(int i=0;i<2;i++){
@@ -87,11 +94,17 @@ public class MyPlayer : MonoBehaviour
     }
     void Update()
     {
-        
+        popickAnimator.SetBool("suck",headControlled);
+        print(popickAnimator.GetBool("suck"));
         if (calibrated){
-            
+            time_since_last_step+=Time.deltaTime;
             bool[] truedown = {down[0]||downdelay[0],down[1],downdelay[1]};
             Vector3 center = (foot[0].position*(truedown[0]?5f:1f)+foot[1].position*(truedown[1]?5f:1f))/((truedown[0]?5f:1f)+(truedown[1]?5f:1f));
+            center = (4f*center + foot[last_step].position*(truedown[last_step]?just_stepped:0f))/(4f+(truedown[last_step]?just_stepped:0f));
+            center.y-=just_stepped/3f;
+            if (just_stepped>0){
+                just_stepped = math.max(just_stepped-4f*Time.deltaTime,0f);
+            }
             center.y+=3.2f+((truedown[0]?0f:0.8f)+(truedown[1]?0f:0.8f))- (foot[0].position-foot[1].position).magnitude/6f;
             //center += steps[0]/15f+steps[1]/15f;
 
@@ -99,7 +112,9 @@ public class MyPlayer : MonoBehaviour
 
             transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref cameraCatchLook,0.5f);
 
-            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref cameraCatchPos,0.3f);
+            
+            cameraCatchPos.y *= (1f+2f*Time.deltaTime*just_stepped*math.clamp(0.5f/last_step_time,1f,3f));   
+            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref cameraCatchPos,0.3f-0.05f*just_stepped);
 
             head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
@@ -184,13 +199,19 @@ public class MyPlayer : MonoBehaviour
             }
             
         }else if(t.phase == TouchPhase.Began){
+            audioSrc.PlayOneShot(cue.GetRandomClip());
             down[f] = true;
             main = 1-f;
             if(down[1-f] || downdelay[1-f]){
+                just_stepped = 3f;
+                last_step_time=time_since_last_step;
+                time_since_last_step = 0f;
+                
                 if(!lift){
                     foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
                     steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
+                    last_step = f;
                 }
                 else{
                     print("liftend");
@@ -286,7 +307,7 @@ public class MyPlayer : MonoBehaviour
     }
 
     float ScaleScreenDistance(float d){
-        float p = (d-minmax[0])/(minmax[1]-minmax[0]);
+        float p = math.clamp((d-minmax[0])/(minmax[1]-minmax[0]),0f,1f);
         
         return math.lerp(0.8f,9f,p);
     }
