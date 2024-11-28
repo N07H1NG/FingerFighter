@@ -248,6 +248,7 @@ MonoBehaviour:
   - {fileID: 9015999783503637760}
   - {fileID: 4621781999387054906}
   head: {fileID: 8247379219186490519}
+  Cam: {fileID: 4850912745985169920}
   cue: {fileID: 11400000, guid: 4940530baac78cb43b04a66619097016, type: 2}
 --- !u!82 &7095168872485342609
 AudioSource:
@@ -615,7 +616,7 @@ Transform:
   m_GameObject: {fileID: 2488962114252898294}
   serializedVersion: 2
   m_LocalRotation: {x: 0.42257902, y: -0.0000000013392079, z: -0.0000000075949975, w: 0.9063262}
-  m_LocalPosition: {x: 0, y: 11, z: -8}
+  m_LocalPosition: {x: 0, y: 3, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1068,6 +1069,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2611054400957457860}
+  - component: {fileID: 3782929570922251007}
   m_Layer: 0
   m_Name: Player_Alt
   m_TagString: Untagged
@@ -1096,6 +1098,27 @@ Transform:
   - {fileID: 9015999783503637760}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3782929570922251007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8534913260406608550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2230611399
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &9158261662498685013
 GameObject:
   m_ObjectHideFlags: 0
