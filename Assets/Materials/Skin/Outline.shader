@@ -39,8 +39,7 @@ Shader "Unlit/Outline"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                float4 oldvertex : TEXCOORD1;
-                float4 newvertex : TEXCOORD2;
+                
             };
 
             
@@ -65,7 +64,7 @@ Shader "Unlit/Outline"
                 //clip(-1);
                 // sample the texture
                 fixed4 col = _Outline;
-                clip((i.oldvertex-i.newvertex).z+20);
+                
                 return col;
             }
             ENDCG

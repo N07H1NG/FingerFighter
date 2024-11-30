@@ -133,7 +133,7 @@ public class MyPlayer : MonoBehaviour
             head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
-            Cam.forward = transform.forward+head.up-Vector3.up;
+            Cam.forward = transform.forward+2*head.up-Vector3.up;
 
             foreach(Touch touch in Touch.activeTouches){
                 HandleTouch(touch);
@@ -165,6 +165,7 @@ public class MyPlayer : MonoBehaviour
                 }
             }
             else if(footTouches.Count<2 && touch.phase == TouchPhase.Began){
+                
                 
                 footTouches.Add(touch.touchId,main);
                 
