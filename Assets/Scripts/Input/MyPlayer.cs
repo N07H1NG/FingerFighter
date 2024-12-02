@@ -61,8 +61,11 @@ public class MyPlayer : NetworkBehaviour
 
     public List<Touch> networkActiveTouches = new List<Touch>();
 
-    //bool unhandledtouches;
+    List<Coroutine> liftCoroutines = new List<Coroutine>();
 
+    bool unhandledTouches;
+    float unhandledTouchDelta = 0;
+    float unhandledTouchDeltaBuffer = 0;
     //public List<Touch> thisFrameTouches;
 
     void Awake()
@@ -117,7 +120,7 @@ public class MyPlayer : NetworkBehaviour
     void Update()
     {
         popickAnimator.SetBool("suck",headControlled);
-        
+        unhandledTouchDelta+=Time.deltaTime;
         if (calibrated){
             time_since_last_step+=Time.deltaTime;
             bool[] truedown = {down[0]||downdelay[0],down[1],downdelay[1]};
@@ -155,9 +158,7 @@ public class MyPlayer : NetworkBehaviour
             //head.forward = transform.rotation*HeadTarget;
             Cam.forward = transform.forward+2*head.up-Vector3.up;
 
-            foreach(Touch touch in networkActiveTouches){
-                HandleTouch(touch);
-            }
+            
 
             MoveHead();
 
@@ -176,12 +177,14 @@ public class MyPlayer : NetworkBehaviour
 
 
 
-    //void SigleFrameOfTouches(List<NetworkTouchData> l){
-    //    foreach(Touch touch in l){
-    //            HandleTouch(touch);
-    //    }
-    //    unhandledtouches = true;
-    //}
+    public void SingleFrameOfTouches(List<Touch> l){
+        networkActiveTouches = l;
+        unhandledTouches = true;
+        foreach(Touch touch in l){
+                HandleTouch(touch);
+        }
+        
+    }
 
     void HandleTouch(Touch touch){
         if ((touch.screenPosition.x>=Screen.width/2 && (touch.touchId != headTouch||!headControlled) )|| footTouches.Keys.Contains(touch.touchId))
@@ -239,7 +242,8 @@ public class MyPlayer : NetworkBehaviour
             just_upped = 3f;
             if (!down[1-f]){
                 main=1-f;
-                StartCoroutine(liftDelay(f));
+                
+                liftCoroutines.Add(StartCoroutine(liftDelay(f)));
 
             }
             else{
@@ -280,7 +284,10 @@ public class MyPlayer : NetworkBehaviour
                 foot[f].position = stepstarts[f];
                 
             }
-            StopAllCoroutines();
+            foreach(Coroutine c in liftCoroutines){
+                StopCoroutine(c);
+            }
+            liftCoroutines.Clear();
             downdelay[0] = false;
             downdelay[1] = false;
             
@@ -358,7 +365,7 @@ public class MyPlayer : NetworkBehaviour
             else{
                 down = false;
             }
-            yield return null;
+            yield return new WaitUntil(HasUnhandledTouches);
         }    
         calibrated = true;
     }
@@ -367,5 +374,13 @@ public class MyPlayer : NetworkBehaviour
         float p = math.clamp((d-minmax[0])/(minmax[1]-minmax[0]),0f,1f);
         
         return math.lerp(0.8f,9f,p);
+    }
+
+    bool HasUnhandledTouches(){
+        if (unhandledTouches){
+            unhandledTouches = false;
+            return true;
+        }
+        return false;
     }
 }

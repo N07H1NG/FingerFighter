@@ -63,10 +63,8 @@ public class RpcTest : NetworkBehaviour
     void ServerFinishFrameRpc(ulong sourceNetworkObjectId)
     {
         Debug.Log($"Server Received the finish RPC on NetworkObject #{sourceNetworkObjectId}");
-        plr.networkActiveTouches = new List<NetworkTouchData>(framtouches);
-        print(plr.networkActiveTouches.Count());
+        plr.SingleFrameOfTouches(new List<NetworkTouchData>(framtouches));
         framtouches.Clear();
-        print(plr.networkActiveTouches.Count());
     }
 
 }
