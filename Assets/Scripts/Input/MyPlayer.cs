@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -10,11 +11,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UIElements;
-using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using Touch = NetworkTouchData;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 
-public class MyPlayer : MonoBehaviour 
+public class MyPlayer : NetworkBehaviour
 
 {
     
@@ -58,10 +59,14 @@ public class MyPlayer : MonoBehaviour
     AudioSource audioSrc;
     public MyAudioCue cue;
 
+    public List<Touch> networkActiveTouches = new List<Touch>();
+
+    //public List<Touch> thisFrameTouches;
+
     void Awake()
     {
 
-        EnhancedTouchSupport.Enable();
+        //EnhancedTouchSupport.Enable();
         //screenScaler = EnhancedTouch.Screen;
     }
 
@@ -70,7 +75,7 @@ public class MyPlayer : MonoBehaviour
     /// </summary>
     void OnEnable()
     {
-        EnhancedTouchSupport.Enable();
+        //EnhancedTouchSupport.Enable();
     }
 
     /// <summary>
@@ -78,8 +83,21 @@ public class MyPlayer : MonoBehaviour
     /// </summary>
     void OnDisable()
     {
-        EnhancedTouchSupport.Disable();
+        //EnhancedTouchSupport.Disable();
     }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner) EnhancedTouchSupport.Enable();
+        base.OnNetworkSpawn();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        EnhancedTouchSupport.Disable();
+        base.OnNetworkDespawn();
+    }
+
     void Start()
     {
         audioSrc = GetComponent<AudioSource>();
@@ -135,7 +153,7 @@ public class MyPlayer : MonoBehaviour
             //head.forward = transform.rotation*HeadTarget;
             Cam.forward = transform.forward+2*head.up-Vector3.up;
 
-            foreach(Touch touch in Touch.activeTouches){
+            foreach(Touch touch in networkActiveTouches){
                 HandleTouch(touch);
             }
 
@@ -151,6 +169,14 @@ public class MyPlayer : MonoBehaviour
                 attempted_dir = (Vector3.Dot(attempted_dir,transform.forward)>=-0.3f)?attempted_dir:attempted_dir*-1f;
                 footTargets[i].forward = Vector3.SmoothDamp(footTargets[i].forward,attempted_dir,ref footRots[i],0.3f);
             }
+        }
+    }
+
+
+
+    void SigleFrameOfTouches(List<NetworkTouchData> l){
+        foreach(Touch touch in l){
+                HandleTouch(touch);
         }
     }
 
@@ -308,7 +334,7 @@ public class MyPlayer : MonoBehaviour
         int count = 0;
         float calibration_timer = 0f;
         while(calibration_timer<2f||count<3||down||minmax[0]>=minmax[1]/2f){
-            if ((Touch.activeTouches.Count)==2){
+            if ((networkActiveTouches.Count)==2){
                 if (!down){
                     down = true;
                     count +=1;
@@ -316,7 +342,7 @@ public class MyPlayer : MonoBehaviour
                 
                 
                 calibration_timer+=Time.deltaTime;
-                float d =(Touch.activeTouches[0].screenPosition - Touch.activeTouches[1].screenPosition).magnitude;
+                float d =(networkActiveTouches[0].screenPosition - networkActiveTouches[1].screenPosition).magnitude;
                 if (d<minmax[0]||minmax[0]==0){
                     minmax[0] = d;
                 }
