@@ -30,7 +30,7 @@ public class RpcTest : NetworkBehaviour
             foreach(Touch t in Touch.activeTouches){
                 NetworkTouchData td = new NetworkTouchData();
                 td.delta = t.delta;
-                td.screenPosition = t.startScreenPosition;
+                td.screenPosition = t.screenPosition;
                 td.touchId = t.touchId;
                 td.phase = t.phase;
                 ServerOnlyNewTouchRpc(td, NetworkObjectId);
