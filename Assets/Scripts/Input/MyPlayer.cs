@@ -61,6 +61,8 @@ public class MyPlayer : NetworkBehaviour
 
     public List<Touch> networkActiveTouches = new List<Touch>();
 
+    //bool unhandledtouches;
+
     //public List<Touch> thisFrameTouches;
 
     void Awake()
@@ -174,11 +176,12 @@ public class MyPlayer : NetworkBehaviour
 
 
 
-    void SigleFrameOfTouches(List<NetworkTouchData> l){
-        foreach(Touch touch in l){
-                HandleTouch(touch);
-        }
-    }
+    //void SigleFrameOfTouches(List<NetworkTouchData> l){
+    //    foreach(Touch touch in l){
+    //            HandleTouch(touch);
+    //    }
+    //    unhandledtouches = true;
+    //}
 
     void HandleTouch(Touch touch){
         if ((touch.screenPosition.x>=Screen.width/2 && (touch.touchId != headTouch||!headControlled) )|| footTouches.Keys.Contains(touch.touchId))
@@ -334,7 +337,9 @@ public class MyPlayer : NetworkBehaviour
         int count = 0;
         float calibration_timer = 0f;
         while(calibration_timer<2f||count<3||down||minmax[0]>=minmax[1]/2f){
+            //print(calibration_timer);
             if ((networkActiveTouches.Count)==2){
+                //print("TwoTouches");
                 if (!down){
                     down = true;
                     count +=1;
