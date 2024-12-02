@@ -156,7 +156,7 @@ public class MyPlayer : NetworkBehaviour
             head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
-            Cam.forward = transform.forward+2*head.up-Vector3.up;
+            Cam.forward = transform.forward+2.3f*head.up-Vector3.up;
 
             
 
@@ -180,10 +180,11 @@ public class MyPlayer : NetworkBehaviour
     public void SingleFrameOfTouches(List<Touch> l){
         networkActiveTouches = l;
         unhandledTouches = true;
-        foreach(Touch touch in l){
-                HandleTouch(touch);
+        if (calibrated){
+            foreach(Touch touch in l){
+                    HandleTouch(touch);
+            }
         }
-        
     }
 
     void HandleTouch(Touch touch){
@@ -327,7 +328,7 @@ public class MyPlayer : NetworkBehaviour
 
     void HeadAttack(Touch touch){
         
-        Vector2 d = 50f*touch.delta/minmax[0];
+        Vector2 d = 30f*touch.delta/minmax[0];
         HeadTarget = Quaternion.AngleAxis(-1f*d.y,Vector3.right)*HeadTarget;
         HeadTarget = Quaternion.AngleAxis(d.x,Vector3.up)*HeadTarget;
     }
