@@ -6,10 +6,19 @@ using Unity.Netcode;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
+using Unity.VisualScripting;
 
 public class TouchMessageHandler : NetworkBehaviour
 {
-
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    void Awake()
+    {
+        if(IsClient){
+            EnhancedTouchSupport.Enable();
+        }
+    }
     
     [Tooltip("The name identifier used for this custom message handler.")]
     public string MessageName = "TouchMessage";
@@ -34,6 +43,7 @@ public class TouchMessageHandler : NetworkBehaviour
         if (!IsServer && IsOwner) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
         {
             foreach(Touch t in Touch.activeTouches){
+                Debug.Log("Sending message");
                 NetworkTouchData td = new NetworkTouchData();
                 td.delta = t.delta;
                 td.screenPosition = t.screenPosition;
@@ -56,16 +66,16 @@ public class TouchMessageHandler : NetworkBehaviour
     /// </summary>
     private void ReceiveMessage(ulong senderId, FastBufferReader messagePayload)
     {
-        print("RECEIVED");
+        
         var receivedMessageContent = new NetworkTouchData();
         messagePayload.ReadValueSafe(out receivedMessageContent);
         if (IsServer)
         {
-            Debug.Log($"Sever received GUID ({receivedMessageContent}) from client ({senderId})");
+            Debug.Log($"Sever received Touch from client ({senderId})");
         }
         else
         {
-            Debug.Log($"Client received GUID ({receivedMessageContent}) from the server.");
+            Debug.Log($"Client received Touch from the server.");
         }
     }
 
