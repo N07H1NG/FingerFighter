@@ -11,6 +11,16 @@ public class CustomNamedMessageHandler : NetworkBehaviour
     /// For most cases, you want to register once your NetworkBehaviour's
     /// NetworkObject (typically in-scene placed) is spawned.
     /// </summary>
+    /// 
+     /// <summary>
+    /// Update is called every frame, if the MonoBehaviour is enabled.
+    /// </summary>
+    void Update()
+    {
+        if(IsClient){
+            SendMessage(Guid.NewGuid());
+        }
+    }
     public override void OnNetworkSpawn()
     {
         // Both the server-host and client(s) register the custom named message.
