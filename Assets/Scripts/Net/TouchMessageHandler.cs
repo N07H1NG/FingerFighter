@@ -34,15 +34,15 @@ public class TouchMessageHandler : NetworkBehaviour
     private void ReceiveMessage(ulong senderId, FastBufferReader messagePayload)
     {
         print("RECEIVED");
-        var receivedMessageContent = new ForceNetworkSerializeByMemcpy<Guid>(new Guid());
+        var receivedMessageContent = string.Empty;
         messagePayload.ReadValueSafe(out receivedMessageContent);
         if (IsServer)
         {
-            Debug.Log($"Sever received GUID ({receivedMessageContent.Value}) from client ({senderId})");
+            Debug.Log($"Sever received GUID ({receivedMessageContent}) from client ({senderId})");
         }
         else
         {
-            Debug.Log($"Client received GUID ({receivedMessageContent.Value}) from the server.");
+            Debug.Log($"Client received GUID ({receivedMessageContent}) from the server.");
         }
     }
 
