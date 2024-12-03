@@ -15,30 +15,17 @@ public class TouchMessageHandler : NetworkBehaviour
     {
         // Both the server-host and client(s) register the custom named message.
         NetworkManager.CustomMessagingManager.RegisterNamedMessageHandler(MessageName, ReceiveMessage);
-
-        if (IsServer)
-        {
-            // Server broadcasts to all clients when a new client connects (just for example purposes)
-            NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
-        }
-        else
-        {
-            // Clients send a unique Guid to the server
-            SendMessage(Guid.NewGuid());
-        }
+        SendMessage(NetworkManager.ServerClientId,"spawn");
+        
     }
 
-    private void OnClientConnectedCallback(ulong obj)
-    {
-        SendMessage(Guid.NewGuid());
-    }
+    
 
     public override void OnNetworkDespawn()
     {
         // De-register when the associated NetworkObject is despawned.
         NetworkManager.CustomMessagingManager.UnregisterNamedMessageHandler(MessageName);
         // Whether server or not, unregister this.
-        NetworkManager.OnClientDisconnectCallback -= OnClientConnectedCallback;
     }
 
     /// <summary>
@@ -46,6 +33,7 @@ public class TouchMessageHandler : NetworkBehaviour
     /// </summary>
     private void ReceiveMessage(ulong senderId, FastBufferReader messagePayload)
     {
+        print("RECEIVED");
         var receivedMessageContent = new ForceNetworkSerializeByMemcpy<Guid>(new Guid());
         messagePayload.ReadValueSafe(out receivedMessageContent);
         if (IsServer)
@@ -62,9 +50,9 @@ public class TouchMessageHandler : NetworkBehaviour
     /// Invoke this with a Guid by a client or server-host to send a
     /// custom named message.
     /// </summary>
-    public void SendMessage(Guid inGameIdentifier)
+    public void SendMessage(ulong Id, string Data)
     {
-        var messageContent = new ForceNetworkSerializeByMemcpy<Guid>(inGameIdentifier);
+        var messageContent = Data;
         var writer = new FastBufferWriter(1100, Allocator.Temp);
         var customMessagingManager = NetworkManager.CustomMessagingManager;
         using (writer)
@@ -80,7 +68,7 @@ public class TouchMessageHandler : NetworkBehaviour
             {
                 // This is a client or server method that sends a named message to one target destination
                 // (client to server or server to client)
-                customMessagingManager.SendNamedMessage(MessageName, NetworkManager.ServerClientId, writer);
+                customMessagingManager.SendNamedMessage(MessageName, Id, writer);
             }
         }
     }
