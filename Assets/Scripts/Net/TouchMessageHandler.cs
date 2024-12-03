@@ -40,7 +40,7 @@ public class TouchMessageHandler : NetworkBehaviour
     
     void Update()
     {
-        if (!IsServer && IsOwner) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
+        if (IsClient) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
         {
             foreach(Touch t in Touch.activeTouches){
                 Debug.Log("Sending message");
