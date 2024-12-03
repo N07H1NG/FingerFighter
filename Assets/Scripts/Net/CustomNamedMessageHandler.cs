@@ -2,34 +2,43 @@ using System;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Netcode;
-public class TouchMessageHandler : NetworkBehaviour
+public class CustomNamedMessageHandler : NetworkBehaviour
 {
-
-    
     [Tooltip("The name identifier used for this custom message handler.")]
-    public string MessageName = "TouchMessage";
+    public string MessageName = "MyCustomNamedMessage";
 
     /// <summary>
     /// For most cases, you want to register once your NetworkBehaviour's
     /// NetworkObject (typically in-scene placed) is spawned.
     /// </summary>
-    /// 
-    
     public override void OnNetworkSpawn()
     {
         // Both the server-host and client(s) register the custom named message.
         NetworkManager.CustomMessagingManager.RegisterNamedMessageHandler(MessageName, ReceiveMessage);
-        SendMessage(NetworkManager.ServerClientId,"spawn");
-        
+
+        if (IsServer)
+        {
+            // Server broadcasts to all clients when a new client connects (just for example purposes)
+            NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
+        }
+        else
+        {
+            // Clients send a unique Guid to the server
+            SendMessage(Guid.NewGuid());
+        }
     }
 
-    
+    private void OnClientConnectedCallback(ulong obj)
+    {
+        SendMessage(Guid.NewGuid());
+    }
 
     public override void OnNetworkDespawn()
     {
         // De-register when the associated NetworkObject is despawned.
         NetworkManager.CustomMessagingManager.UnregisterNamedMessageHandler(MessageName);
         // Whether server or not, unregister this.
+        NetworkManager.OnClientDisconnectCallback -= OnClientConnectedCallback;
     }
 
     /// <summary>
@@ -37,16 +46,15 @@ public class TouchMessageHandler : NetworkBehaviour
     /// </summary>
     private void ReceiveMessage(ulong senderId, FastBufferReader messagePayload)
     {
-        print("RECEIVED");
-        var receivedMessageContent = string.Empty;
+        var receivedMessageContent = new ForceNetworkSerializeByMemcpy<Guid>(new Guid());
         messagePayload.ReadValueSafe(out receivedMessageContent);
         if (IsServer)
         {
-            Debug.Log($"Sever received GUID ({receivedMessageContent}) from client ({senderId})");
+            Debug.Log($"Sever received GUID ({receivedMessageContent.Value}) from client ({senderId})");
         }
         else
         {
-            Debug.Log($"Client received GUID ({receivedMessageContent}) from the server.");
+            Debug.Log($"Client received GUID ({receivedMessageContent.Value}) from the server.");
         }
     }
 
@@ -54,9 +62,9 @@ public class TouchMessageHandler : NetworkBehaviour
     /// Invoke this with a Guid by a client or server-host to send a
     /// custom named message.
     /// </summary>
-    public void SendMessage(ulong Id, string Data)
+    public void SendMessage(Guid inGameIdentifier)
     {
-        var messageContent = Data;
+        var messageContent = new ForceNetworkSerializeByMemcpy<Guid>(inGameIdentifier);
         var writer = new FastBufferWriter(1100, Allocator.Temp);
         var customMessagingManager = NetworkManager.CustomMessagingManager;
         using (writer)
@@ -72,7 +80,7 @@ public class TouchMessageHandler : NetworkBehaviour
             {
                 // This is a client or server method that sends a named message to one target destination
                 // (client to server or server to client)
-                customMessagingManager.SendNamedMessage(MessageName, Id, writer);
+                customMessagingManager.SendNamedMessage(MessageName, NetworkManager.ServerClientId, writer);
             }
         }
     }
