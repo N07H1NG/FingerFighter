@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.community.netcode.extensions": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/com.community.netcode.extensions",
     "com.unity.adaptiveperformance.google.android": "1.3.1",
     "com.unity.adaptiveperformance.samsung.android": "5.0.0",
     "com.unity.animation.rigging": "1.2.1",
