@@ -663,10 +663,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1832005758}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ba2aca9d9e51264882fefb12a1ac5a4, type: 3}
+  m_Script: {fileID: 11500000, guid: 343ff8642545bb045b0ed1781183b92c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MessageName: MyCustomNamedMessage
+  MessageName: TouchMessage
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

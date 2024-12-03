@@ -2,6 +2,11 @@ using System;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Netcode;
+
+using UnityEngine.InputSystem.EnhancedTouch;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using TouchPhase = UnityEngine.InputSystem.TouchPhase;
+
 public class TouchMessageHandler : NetworkBehaviour
 {
 
@@ -14,17 +19,31 @@ public class TouchMessageHandler : NetworkBehaviour
     /// NetworkObject (typically in-scene placed) is spawned.
     /// </summary>
     /// 
-    
+
     public override void OnNetworkSpawn()
     {
         // Both the server-host and client(s) register the custom named message.
         NetworkManager.CustomMessagingManager.RegisterNamedMessageHandler(MessageName, ReceiveMessage);
-        SendMessage(NetworkManager.ServerClientId,"spawn");
+        
         
     }
 
     
-
+    void Update()
+    {
+        if (!IsServer && IsOwner) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
+        {
+            foreach(Touch t in Touch.activeTouches){
+                NetworkTouchData td = new NetworkTouchData();
+                td.delta = t.delta;
+                td.screenPosition = t.screenPosition;
+                td.touchId = t.touchId;
+                td.phase = t.phase;
+                SendMessage(NetworkManager.ServerClientId,td);
+            }
+            
+        }
+    }
     public override void OnNetworkDespawn()
     {
         // De-register when the associated NetworkObject is despawned.
@@ -38,7 +57,7 @@ public class TouchMessageHandler : NetworkBehaviour
     private void ReceiveMessage(ulong senderId, FastBufferReader messagePayload)
     {
         print("RECEIVED");
-        var receivedMessageContent = string.Empty;
+        var receivedMessageContent = new NetworkTouchData();
         messagePayload.ReadValueSafe(out receivedMessageContent);
         if (IsServer)
         {
@@ -54,7 +73,7 @@ public class TouchMessageHandler : NetworkBehaviour
     /// Invoke this with a Guid by a client or server-host to send a
     /// custom named message.
     /// </summary>
-    public void SendMessage(ulong Id, string Data)
+    public void SendMessage(ulong Id, NetworkTouchData Data)
     {
         var messageContent = Data;
         var writer = new FastBufferWriter(1100, Allocator.Temp);
