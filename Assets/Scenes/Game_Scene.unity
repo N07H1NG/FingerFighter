@@ -175,7 +175,7 @@ MonoBehaviour:
   m_MaxConnectAttempts: 60
   m_DisconnectTimeoutMS: 30000
   ConnectionData:
-    Address: 192.168.1.26
+    Address: 
     Port: 80
     ServerListenAddress: 0.0.0.0
   DebugSimulator:
@@ -201,7 +201,7 @@ MonoBehaviour:
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: b4cf1aff50c71e046aee95f78dd88ee4, type: 2}
-    TickRate: 30
+    TickRate: 60
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
     ConnectionData: 
@@ -260,7 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e41f5ac27cd5d94290b437bd63e3e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Port: 47777
+  m_Port: 80
   m_UniqueApplicationId: -7738329947901067593
   m_StartWithServer: 1
   ServerName: EnterName
