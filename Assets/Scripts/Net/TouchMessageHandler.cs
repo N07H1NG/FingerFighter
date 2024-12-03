@@ -15,7 +15,7 @@ public class TouchMessageHandler : NetworkBehaviour
     {
         // Both the server-host and client(s) register the custom named message.
         NetworkManager.CustomMessagingManager.RegisterNamedMessageHandler(MessageName, ReceiveMessage);
-        SendMessage(NetworkManager.ServerClientId,new NetworkTouchData());
+        SendMessage(NetworkManager.ServerClientId,"spawn");
         
     }
 
@@ -33,6 +33,7 @@ public class TouchMessageHandler : NetworkBehaviour
     /// </summary>
     private void ReceiveMessage(ulong senderId, FastBufferReader messagePayload)
     {
+        print("RECEIVED");
         var receivedMessageContent = new ForceNetworkSerializeByMemcpy<Guid>(new Guid());
         messagePayload.ReadValueSafe(out receivedMessageContent);
         if (IsServer)
@@ -49,7 +50,7 @@ public class TouchMessageHandler : NetworkBehaviour
     /// Invoke this with a Guid by a client or server-host to send a
     /// custom named message.
     /// </summary>
-    public void SendMessage(ulong Id, NetworkTouchData Data)
+    public void SendMessage(ulong Id, string Data)
     {
         var messageContent = Data;
         var writer = new FastBufferWriter(1100, Allocator.Temp);
