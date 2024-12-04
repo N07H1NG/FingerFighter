@@ -136,7 +136,7 @@ Shader "Hidden/MyPostProcessing"
                 
 
                 float4 col = tex2D(_MainTex,i.uv+scaler*float2(-3,-3));
-                float4 col2 = tex2D(_MainTex,i.uv+scaler*float2(-6,0));
+                float4 col2 = tex2D(_MainTex,i.uv+scaler*float2(-4,0));
                 float4 col3 = tex2D(_MainTex,i.uv+scaler*float2(3,2));
                 float4 col4 = tex2D(_MainTex,i.uv);
                 float4 bg = tex2D(_BG,i.vertex.xy/512);
@@ -192,21 +192,24 @@ Shader "Hidden/MyPostProcessing"
                 //return dist1;
                 //return dist1<0.4;
 
-
+                
                 float4 cmyk = RGBtoCMYK(col.xyz);
                 float4 cmyk2 = RGBtoCMYK(col2.xyz);
                 float4 cmyk3 = RGBtoCMYK(col3.xyz);
+                
                 float4 cmyk4 = RGBtoCMYK(col4.xyz);
                 
                 cmyk = float4(cmyk.x,cmyk2.y,cmyk3.z,cmyk4.w);
-                noise = float4(0,0,0,0);
+                //return cmyk.z;
+                //noise = float4(0,0,0,0);
+                //return cmyk.x;
                 cmyk = saturate(float4(cmyk.x-noise.x>dist1,cmyk.y-noise.y>dist2,cmyk.z-noise.z>dist3,cmyk.w-noise.w>dist4)); //IMPORTASNT!!
                 
                 
                 
                 float4 removal = 1-(cmyk.w*(1-_Black)+cmyk.x*(1-_Cyan) + cmyk.y*(1-_Magenta) + cmyk.z*(1-_Yellow));
                 float ink = (0.99+(3*cmyk.w+cmyk.x+cmyk.y+cmyk.z)/600)*saturate((cmyk.w+cmyk.x+cmyk.y+cmyk.z));
-                return bg*(1-ink)+ink*removal;
+                return bg*(1-ink)+ink*removal*bg;
                 bg = bg-cmyk.w*(bg-_Black)- cmyk.x*(bg-_Cyan) -cmyk.y*(bg-_Magenta) -cmyk.z*(bg-_Yellow);
                 bg=  bg-cmyk.x*(bg-_Cyan);
                 bg=  bg-cmyk.y*(bg-_Magenta);

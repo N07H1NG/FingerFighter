@@ -39,7 +39,7 @@ Shader "Unlit/Outline"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                
+                float to_edge : TEXCOORD1;
             };
 
             
@@ -54,7 +54,7 @@ Shader "Unlit/Outline"
                 float4 offset = UnityObjectToClipPos(v.vertex +_OutlineSize*v.normal/900);
                 o.vertex = clip+float4(vec.xy/1000,0,0); 
                 //o.vertex = offset; 
-                
+                o.to_edge = pow(length(v.normal.xy/100),12);
                 o.uv = v.uv;
                 return o;
             }
@@ -65,7 +65,7 @@ Shader "Unlit/Outline"
                 // sample the texture
                 fixed4 col = _Outline;
                 
-                return col;
+                return col*i.to_edge;
             }
             ENDCG
         }
