@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -18,6 +19,19 @@ public class RpcTest : NetworkBehaviour
     /// <summary>
     /// Awake is called when the script instance is being loaded.
     /// </summary>
+
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner) EnhancedTouchSupport.Enable();
+        base.OnNetworkSpawn();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (IsOwner) EnhancedTouchSupport.Disable();
+        base.OnNetworkDespawn();
+    }
     void Awake()
     {
         plr = GetComponentInChildren<MyPlayer>();
@@ -25,7 +39,7 @@ public class RpcTest : NetworkBehaviour
     void Update()
     {
         
-        if (!IsServer && IsOwner) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
+        if (IsOwner && EnhancedTouchSupport.enabled) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
         {
             foreach(Touch t in Touch.activeTouches){
                 NetworkTouchData td = new NetworkTouchData();
@@ -63,6 +77,7 @@ public class RpcTest : NetworkBehaviour
     void ServerFinishFrameRpc(ulong sourceNetworkObjectId)
     {
         Debug.Log($"Server Received the finish RPC on NetworkObject #{sourceNetworkObjectId}");
+        
         plr.SingleFrameOfTouches(new List<NetworkTouchData>(framtouches));
         framtouches.Clear();
     }

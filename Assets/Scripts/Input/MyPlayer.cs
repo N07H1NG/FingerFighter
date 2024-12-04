@@ -15,7 +15,7 @@ using Touch = NetworkTouchData;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 
-public class MyPlayer : NetworkBehaviour
+public class MyPlayer : MonoBehaviour
 
 {
     
@@ -64,43 +64,26 @@ public class MyPlayer : NetworkBehaviour
     List<Coroutine> liftCoroutines = new List<Coroutine>();
 
     bool unhandledTouches;
-    float unhandledTouchDelta = 0;
-    float unhandledTouchDeltaBuffer = 0;
-    //public List<Touch> thisFrameTouches;
+    float unhandledTouchDelta = 0f;
+    float unhandledTouchDeltaBuffer = 0f;
+    
 
     void Awake()
     {
 
-        //EnhancedTouchSupport.Enable();
-        //screenScaler = EnhancedTouch.Screen;
+        
     }
 
-    /// <summary>
-    /// This function is called when the object becomes enabled and active.
-    /// </summary>
+    
     void OnEnable()
     {
-        //EnhancedTouchSupport.Enable();
+        
     }
 
-    /// <summary>
-    /// This function is called when the behaviour becomes disabled or inactive.
-    /// </summary>
+    
     void OnDisable()
     {
-        //EnhancedTouchSupport.Disable();
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        if (IsOwner) EnhancedTouchSupport.Enable();
-        base.OnNetworkSpawn();
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        EnhancedTouchSupport.Disable();
-        base.OnNetworkDespawn();
+        
     }
 
     void Start()
@@ -120,7 +103,7 @@ public class MyPlayer : NetworkBehaviour
     void Update()
     {
         popickAnimator.SetBool("suck",headControlled);
-        unhandledTouchDelta+=Time.deltaTime;
+        unhandledTouchDeltaBuffer+=Time.deltaTime;
         if (calibrated){
             time_since_last_step+=Time.deltaTime;
             bool[] truedown = {down[0]||downdelay[0],down[1],downdelay[1]};
@@ -178,6 +161,8 @@ public class MyPlayer : NetworkBehaviour
 
 
     public void SingleFrameOfTouches(List<Touch> l){
+        unhandledTouchDelta = unhandledTouchDeltaBuffer;
+        unhandledTouchDeltaBuffer = 0f;
         networkActiveTouches = l;
         unhandledTouches = true;
         if (calibrated){
@@ -328,7 +313,7 @@ public class MyPlayer : NetworkBehaviour
 
     void HeadAttack(Touch touch){
         
-        Vector2 d = 30f*touch.delta/minmax[0];
+        Vector2 d = 200f*touch.delta/(minmax[0]+minmax[1]);
         HeadTarget = Quaternion.AngleAxis(-1f*d.y,Vector3.right)*HeadTarget;
         HeadTarget = Quaternion.AngleAxis(d.x,Vector3.up)*HeadTarget;
     }
@@ -345,8 +330,9 @@ public class MyPlayer : NetworkBehaviour
         int count = 0;
         float calibration_timer = 0f;
         while(calibration_timer<2f||count<3||down||minmax[0]>=minmax[1]/2f){
-            //print(calibration_timer);
-            if ((networkActiveTouches.Count)==2){
+            
+            if (networkActiveTouches.Count==2){
+                //print(unhandledTouchDelta);
                 //print("TwoTouches");
                 if (!down){
                     down = true;
@@ -354,7 +340,7 @@ public class MyPlayer : NetworkBehaviour
                 }
                 
                 
-                calibration_timer+=Time.deltaTime;
+                calibration_timer+=unhandledTouchDelta;
                 float d =(networkActiveTouches[0].screenPosition - networkActiveTouches[1].screenPosition).magnitude;
                 if (d<minmax[0]||minmax[0]==0){
                     minmax[0] = d;
@@ -374,7 +360,7 @@ public class MyPlayer : NetworkBehaviour
     float ScaleScreenDistance(float d){
         float p = math.clamp((d-minmax[0])/(minmax[1]-minmax[0]),0f,1f);
         
-        return math.lerp(0.8f,9f,p);
+        return math.lerp(0.7f,9f,p);
     }
 
     bool HasUnhandledTouches(){
