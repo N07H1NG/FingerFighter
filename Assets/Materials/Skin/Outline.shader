@@ -7,8 +7,9 @@ Shader "Unlit/Outline"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderQueue"="Geometry"}
+        Tags { "RenderType"="Opaque" "Queue"="Geometry+1"}
         LOD 100
+        
         //Cull Front
         Stencil{
             ref 1
@@ -17,7 +18,9 @@ Shader "Unlit/Outline"
         }
         Pass
         {
+            //ZTest Always
             
+            Blend  SrcAlpha OneMinusSrcAlpha
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -39,7 +42,7 @@ Shader "Unlit/Outline"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                float to_edge : TEXCOORD1;
+                float2 to_edge : TEXCOORD1;
             };
 
             
@@ -52,9 +55,9 @@ Shader "Unlit/Outline"
                 float4 clip = UnityObjectToClipPos(v.vertex);
                 float4 vec = UnityObjectToClipPos(float4(_OutlineSize*v.normal.xyz,0));
                 float4 offset = UnityObjectToClipPos(v.vertex +_OutlineSize*v.normal/900);
-                o.vertex = clip+float4(vec.xy/1000,0,0); 
+                o.vertex = clip+float4(vec.xyz/1000,0); 
                 //o.vertex = offset; 
-                o.to_edge = pow(length(v.normal.xy/100),12);
+                o.to_edge = vec.xy/_OutlineSize;
                 o.uv = v.uv;
                 return o;
             }
@@ -64,8 +67,11 @@ Shader "Unlit/Outline"
                 //clip(-1);
                 // sample the texture
                 fixed4 col = _Outline;
-                
-                return col*i.to_edge;
+                float somth = length(i.to_edge)/200;
+                return float4(somth,0,0,1);
+                //return float4(somth-360,0,0,0);
+                somth = somth/fwidth(12*somth);
+                return float4(col.xyz,saturate(somth*col.w));
             }
             ENDCG
         }
