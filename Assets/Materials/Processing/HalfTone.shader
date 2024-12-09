@@ -114,7 +114,7 @@ Shader "Hidden/MyPostProcessing"
             {
                 i.dir = normalize(i.dir);
                 float3 flatdir = normalize(float3(i.dir.x,0,i.dir.z));
-                float s = (sign(cross(flatdir,float3(1,0,0)).y)+1)/2;
+                float s = (sign(cross(flatdir,float3(1,0,0)).y)+1)/2.0;
                 float d1 = acos(dot(flatdir,float3(1,0,0)))/PI;
                 d1 = s*d1 + (1-s)*(2-d1);
                 d1/=2;
@@ -127,16 +127,14 @@ Shader "Hidden/MyPostProcessing"
                 
                 
                 float4 noise = tex2D(_Noise,i.vertex.xy/(32*_Scale)-float2(d1*_Scale,0));
-                float4 noiseb = tex2D(_NoiseBlack,i.vertex.xy/(32*_Scale)-float2(d1*_Scale,0));
-                //noise.w = noiseb.x;
-                //noise = 1-step(noise,_NoiseScale);
-                //return 1-noise;
+                
+                
                 float2 scaler = float2(ddx(i.uv.x),ddy(i.uv.y));
-                //return float4(scaler*20,0,0);
+                
                 
 
                 float4 col = tex2D(_MainTex,i.uv+scaler*float2(-3,-3));
-                float4 col2 = tex2D(_MainTex,i.uv+scaler*float2(-4,0));
+                float4 col2 = tex2D(_MainTex,i.uv+scaler*float2(-2,0));
                 float4 col3 = tex2D(_MainTex,i.uv+scaler*float2(3,2));
                 float4 col4 = tex2D(_MainTex,i.uv);
                 float4 bg = tex2D(_BG,i.vertex.xy/512);
@@ -158,11 +156,11 @@ Shader "Hidden/MyPostProcessing"
                 prikol3.x+=_GridShift*_Scale*floor(prikol3.y/_Scale);
                 prikol4.x+=_GridShift*_Scale*floor(prikol4.y/_Scale);
 
-
-                float2 squarenum1 = _Scale*floor(prikol1/_Scale);
-                float2 squarenum2 = _Scale*floor(prikol2/_Scale);
-                float2 squarenum3 = _Scale*floor(prikol3/_Scale);
-                float2 squarenum4 = _Scale*floor(prikol4/_Scale);
+                
+                float2 squarenum1 = floor(prikol1/_Scale);
+                float2 squarenum2 = floor(prikol2/_Scale);
+                float2 squarenum3 = floor(prikol3/_Scale);
+                float2 squarenum4 = floor(prikol4/_Scale);
                 
                 
 
@@ -181,16 +179,17 @@ Shader "Hidden/MyPostProcessing"
                 dist2 = remapdist(dist2);
                 dist3 = remapdist(dist3);
                 dist4 = remapdist(dist4);
+                //return float4((prikol1+1)/2,0,0);
+                float n1 = (1-max(abs(prikol1.x),abs(prikol1.y)))*tex2D(_Noise,squarenum1*0.796+prikol1/100+mul(rot1,float2(d1,0)));
+                float n2 = (1-max(abs(prikol2.x),abs(prikol2.y)))*tex2D(_Noise,squarenum2*0.796+prikol2/100+mul(rot2,float2(d1,0)));
+                float n3 = (1-max(abs(prikol3.x),abs(prikol3.y)))*tex2D(_Noise,squarenum3*0.796+prikol3/100+mul(rot3,float2(d1,0)));
+                float n4 = (1-max(abs(prikol4.x),abs(prikol4.y)))*tex2D(_Noise,squarenum4*0.796+prikol4/100+mul(rot4,float2(d1,0)));
+                //return n1;
+                dist1 += n1;
+                dist2 += n2;
+                dist3 += n3;
+                dist4 += n4; 
                 
-                //return noise;
-                
-                //return saturate(1-length(prikol1));
-                dist1 += 2*(1-max(abs(prikol1.x),abs(prikol1.y)))*(tex2D(_Noise,prikol1/100+squarenum1+float2(d1,0)));
-                dist2 += 2*(1-max(abs(prikol2.x),abs(prikol2.y)))*(tex2D(_Noise,prikol2/100+squarenum2+float2(d1,0)));
-                dist3 += 2*(1-max(abs(prikol3.x),abs(prikol3.y)))*(tex2D(_Noise,prikol3/100+squarenum3+float2(d1,0)));
-                dist4 += 2*(1-max(abs(prikol4.x),abs(prikol4.y)))*(tex2D(_Noise,prikol4/100+squarenum4+float2(d1,0)));
-                //return dist1;
-                //return dist1<0.4;
 
                 
                 float4 cmyk = RGBtoCMYK(col.xyz);
@@ -203,19 +202,14 @@ Shader "Hidden/MyPostProcessing"
                 //return cmyk.z;
                 //noise = float4(0,0,0,0);
                 //return cmyk.x;
-                cmyk = saturate(float4(cmyk.x-noise.x>dist1,cmyk.y-noise.y>dist2,cmyk.z-noise.z>dist3,cmyk.w-noise.w>dist4)); //IMPORTASNT!!
+                cmyk = saturate(float4(cmyk.x>dist1,cmyk.y>dist2,cmyk.z>dist3,cmyk.w>dist4)); //IMPORTASNT!!
                 
                 
                 
                 float4 removal = 1-(cmyk.w*(1-_Black)+cmyk.x*(1-_Cyan) + cmyk.y*(1-_Magenta) + cmyk.z*(1-_Yellow));
                 float ink = (0.99+(3*cmyk.w+cmyk.x+cmyk.y+cmyk.z)/600)*saturate((cmyk.w+cmyk.x+cmyk.y+cmyk.z));
                 return bg*(1-ink)+ink*removal*bg;
-                bg = bg-cmyk.w*(bg-_Black)- cmyk.x*(bg-_Cyan) -cmyk.y*(bg-_Magenta) -cmyk.z*(bg-_Yellow);
-                bg=  bg-cmyk.x*(bg-_Cyan);
-                bg=  bg-cmyk.y*(bg-_Magenta);
-                bg=  bg-cmyk.z*(bg-_Yellow);
-                return bg;
-                return bg - cmyk.x*_Cyan - cmyk.y*_Magenta - cmyk.z*_Yellow - cmyk.w*_Black;
+                
                 
                 
                 

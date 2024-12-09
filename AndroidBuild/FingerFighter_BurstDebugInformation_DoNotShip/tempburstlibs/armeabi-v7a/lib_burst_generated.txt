@@ -1,4 +1,4 @@
-Library: C:\Users\nikit_ne9l466\ue5prjcts\Repos\Finger\FingerFighter\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
+Library: D:\UnityProjects\Variativ\FingerFighter\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
 --platform=Android
 --backend=burst-llvm-16
 --target=ARMV7A_NEON32
@@ -8,11 +8,11 @@ Library: C:\Users\nikit_ne9l466\ue5prjcts\Repos\Finger\FingerFighter\Temp\BurstO
 --float-precision=Standard
 --target-framework=NetFramework
 --generate-link-xml=Temp\burst.link.xml
---temp-folder=C:\Users\nikit_ne9l466\ue5prjcts\Repos\Finger\FingerFighter\Temp\Burst
+--temp-folder=D:\UnityProjects\Variativ\FingerFighter\Temp\Burst
 --debug=Full
---key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.44f1/Editor/Data/PlaybackEngines/AndroidPlayer
---decode-folder=C:\Users\nikit_ne9l466\ue5prjcts\Repos\Finger\FingerFighter\Library\Burst
---output=C:\Users\nikit_ne9l466\ue5prjcts\Repos\Finger\FingerFighter\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
+--key-folder=D:/UnityEditor/2022.3.44f1/Editor/Data/PlaybackEngines/AndroidPlayer
+--decode-folder=D:\UnityProjects\Variativ\FingerFighter\Library\Burst
+--output=D:\UnityProjects\Variativ\FingerFighter\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
 
 --method=Unity.Burst.BurstCompiler+BurstCompilerHelper, Unity.Burst, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::IsBurstEnabled()--8c2be93e18276203cbd918daa2748a10

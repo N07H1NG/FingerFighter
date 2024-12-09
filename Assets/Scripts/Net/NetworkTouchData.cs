@@ -18,6 +18,14 @@ public struct NetworkTouchData : INetworkSerializable
     public Vector2 screenPosition;
     public int touchId;
 
+    public NetworkTouchData(Touch src)
+    {
+        delta = src.delta;
+        phase = src.phase;
+        screenPosition = src.screenPosition;
+        touchId = src.touchId;
+    }
+
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref delta);

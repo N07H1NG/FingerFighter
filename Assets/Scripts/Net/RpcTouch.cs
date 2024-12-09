@@ -8,7 +8,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
-public class RpcTest : NetworkBehaviour
+public class RpcTouch : NetworkBehaviour
 {
 
     List<NetworkTouchData> framtouches = new List<NetworkTouchData>();
@@ -23,8 +23,12 @@ public class RpcTest : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsOwner) EnhancedTouchSupport.Enable();
+        if (IsOwner){
+            EnhancedTouchSupport.Enable();
+            ServerStartInfoRpc(new Vector2(Screen.width,Screen.height),NetworkObjectId);
+        }
         base.OnNetworkSpawn();
+        
     }
 
     public override void OnNetworkDespawn()
@@ -35,34 +39,33 @@ public class RpcTest : NetworkBehaviour
     void Awake()
     {
         plr = GetComponentInChildren<MyPlayer>();
+        
     }
+    
     void Update()
     {
         
-        if (IsOwner && EnhancedTouchSupport.enabled) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
+        if (!IsHost && IsOwner && EnhancedTouchSupport.enabled) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
         {
             foreach(Touch t in Touch.activeTouches){
-                NetworkTouchData td = new NetworkTouchData();
-                td.delta = t.delta;
-                td.screenPosition = t.screenPosition;
-                td.touchId = t.touchId;
-                td.phase = t.phase;
+                NetworkTouchData td = new NetworkTouchData(t);
+                
                 ServerOnlyNewTouchRpc(td, NetworkObjectId);
             }
             ServerFinishFrameRpc(NetworkObjectId);
+            print("YASOSALKA");
+        }
+        else if(IsHost){
+            foreach(Touch t in Touch.activeTouches){
+                NetworkTouchData td = new NetworkTouchData(t);
+                framtouches.Add(td);
+                
+            }
+            plr.SingleFrameOfTouches(new List<NetworkTouchData>(framtouches));
+            framtouches.Clear();
         }
     }
     
-
-    [Rpc(SendTo.ClientsAndHost)]
-    void ClientAndHostRpc( ulong sourceNetworkObjectId)
-    {
-        Debug.Log($"Client Received the RPC  on NetworkObject #{sourceNetworkObjectId}");
-        if (IsOwner) //Only send an RPC to the owner of the NetworkObject
-        {
-            
-        }
-    }
 
     [Rpc(SendTo.Server)]
     void ServerOnlyNewTouchRpc(NetworkTouchData td, ulong sourceNetworkObjectId)
@@ -80,6 +83,13 @@ public class RpcTest : NetworkBehaviour
         
         plr.SingleFrameOfTouches(new List<NetworkTouchData>(framtouches));
         framtouches.Clear();
+    }
+
+    [Rpc(SendTo.Server)]
+    void ServerStartInfoRpc(Vector2 screenSize, ulong sourceNetworkObjectId)
+    {
+        Debug.Log($"Server Received info RPC on NetworkObject #{sourceNetworkObjectId}");
+        plr.screenSize = screenSize;
     }
 
 }

@@ -23,7 +23,7 @@ public class MyPlayer : MonoBehaviour
     float time_since_last_step=0f;
     float last_step_time=0f;
     bool calibrated = false;
-    float screenScaler;
+    public Vector2 screenSize = Vector2.zero; 
     Vector2 dir = new Vector2(0,1);
     bool[] down = new bool[2];
     bool[] downdelay = new bool[2];
@@ -173,7 +173,7 @@ public class MyPlayer : MonoBehaviour
     }
 
     void HandleTouch(Touch touch){
-        if ((touch.screenPosition.x>=Screen.width/2 && (touch.touchId != headTouch||!headControlled) )|| footTouches.Keys.Contains(touch.touchId))
+        if ((touch.screenPosition.x>=screenSize.x/2 && (touch.touchId != headTouch||!headControlled) )|| footTouches.Keys.Contains(touch.touchId))
         {
             if (footTouches.Keys.Contains(touch.touchId)){
                 Finger(footTouches[touch.touchId],touch);
