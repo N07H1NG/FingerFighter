@@ -15,8 +15,8 @@ Shader "Hidden/MyPostProcessing"
         _Magenta("Magenta Ink", Color) = (1,0,1,1)
         _Yellow("Yellow Ink", Color) = (1,1,0,1)
         _Black("Black Ink", Color) = (0,0,0,1)
-        _Noise("Noise Texture", 2D) = "white" {}
-        _NoiseBlack("Noise Texture Black", 2D) = "white" {}
+        _Noise("Noise Texture", 2D) = "black" {}
+        
         _GridShift("Grid shift",Float) = 0.0
         
         _NoiseScale("Noise Scale",Float) = 1.0
@@ -129,7 +129,7 @@ Shader "Hidden/MyPostProcessing"
                 float4 noise = tex2D(_Noise,i.vertex.xy/(32*_Scale)-float2(d1*_Scale,0));
                 
                 
-                float2 scaler = float2(ddx(i.uv.x),ddy(i.uv.y));
+                float2 scaler = float2(ddx(i.uv.x),ddy(i.uv.y))*0;
                 
                 
 

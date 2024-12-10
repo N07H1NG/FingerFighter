@@ -6,6 +6,7 @@ using System.Linq;
 
 public class PlayerDisambigulation : NetworkBehaviour
 {
+    int playerIndex;
     void Start(){
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
@@ -17,9 +18,14 @@ public class PlayerDisambigulation : NetworkBehaviour
             }
         }else{
             GetComponentInChildren<MyPlayer>().enabled = true;
-            float ind = Array.IndexOf(NetworkManager.ConnectedClientsIds.ToArray(),OwnerClientId);
+            playerIndex = Array.IndexOf(NetworkManager.ConnectedClientsIds.ToArray(),OwnerClientId);
             
-            GetComponentInChildren<Camera>().rect = new Rect(ind/2f,0,0.5f,1);
+            PositionCamera(NetworkManager.GetComponent<NetworkMenuHandler>().splitOrientation);
         }
+    }
+
+    public void PositionCamera(bool hor){
+        if (hor) GetComponentInChildren<Camera>().rect = new Rect(playerIndex/2f,0,0.5f,1);
+        else GetComponentInChildren<Camera>().rect = new Rect(0,playerIndex/2f,1,0.5f);
     }
 }

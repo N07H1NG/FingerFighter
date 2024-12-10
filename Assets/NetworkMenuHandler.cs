@@ -8,6 +8,8 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using TMPro;
+using UnityEngine.UI;
+
 
 
 #if UNITY_EDITOR
@@ -17,11 +19,15 @@ using UnityEditor.Events;
 
 public class NetworkMenuHandler : MonoBehaviour
 {
+
+    public bool splitOrientation = true;
+    
     [SerializeField]
     ExampleNetworkDiscovery m_Discovery;
     
     NetworkManager m_NetworkManager;
     [SerializeField] TMP_Dropdown ServerDropdown;
+    [SerializeField] MenuLogic menu;
 
     List<IPAddress> addresses = new List<IPAddress>();
     Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new Dictionary<IPAddress, DiscoveryResponseData>();
@@ -43,21 +49,34 @@ public class NetworkMenuHandler : MonoBehaviour
         }
     }
     #endif
+
+
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
+    void OnEnable()
+    {
+        m_NetworkManager.OnClientConnectedCallback += ClientConnectinsChanged;
+        m_NetworkManager.OnClientDisconnectCallback += ClientConnectinsChanged;
+    }
+
+    /// <summary>
+    /// This function is called when the behaviour becomes disabled or inactive.
+    /// </summary>
+    void OnDisable()
+    {
+        m_NetworkManager.OnClientConnectedCallback -= ClientConnectinsChanged;
+        m_NetworkManager.OnClientDisconnectCallback -= ClientConnectinsChanged;
+    }
     void Start()
     {
         ServerDropdown.gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnServerFound(IPEndPoint sender, DiscoveryResponseData response)
     {
         ServerDropdown.gameObject.SetActive(true);
-        print("found");
+        
         discoveredServers[sender.Address] = response;
         addresses.Add(sender.Address);
         ServerDropdown.ClearOptions();
@@ -65,7 +84,7 @@ public class NetworkMenuHandler : MonoBehaviour
         foreach(IPAddress address in addresses){
             
             
-            srvrList.Add($"{discoveredServers[address].ServerName}[{address.ToString()}]");
+            srvrList.Add($"{discoveredServers[address].ServerName}\n{address.ToString()}");
         }
         ServerDropdown.AddOptions(srvrList);
 
@@ -94,7 +113,7 @@ public class NetworkMenuHandler : MonoBehaviour
         ServerDropdown.ClearOptions();
         m_Discovery.StartClient();
         m_Discovery.ClientBroadcast(new DiscoveryBroadcastData());
-        Debug.Log("Discovery Started");
+        
     }
 
     public void Connect(){
@@ -102,7 +121,9 @@ public class NetworkMenuHandler : MonoBehaviour
             DiscoveryResponseData trg = discoveredServers[addresses[ServerDropdown.value]];
             UnityTransport transport = (UnityTransport)m_NetworkManager.NetworkConfig.NetworkTransport;
             transport.SetConnectionData(addresses[ServerDropdown.value].ToString(), trg.Port);
+            m_NetworkManager.OnClientStarted += OnClientStarted;
             m_NetworkManager.StartClient();
+            
         }
         
         
@@ -111,5 +132,41 @@ public class NetworkMenuHandler : MonoBehaviour
     public void StartServer(){
         m_NetworkManager.StartServer();
         m_Discovery.StartServer();
+        menu.ShowServer();
+    }
+    
+    public void SetServerName(string newName){
+        m_Discovery.ServerName = newName;
+    }
+
+
+    void OnClientStarted(){
+        menu.ShowClient();
+        m_NetworkManager.OnClientStarted -= OnClientStarted;
+    }
+
+    void SetOrientation(bool newOrientation){
+        if (splitOrientation!=newOrientation){
+            splitOrientation = newOrientation;
+            foreach(NetworkClient playerClient in m_NetworkManager.ConnectedClientsList){
+                playerClient.PlayerObject.GetComponent<PlayerDisambigulation>().PositionCamera(splitOrientation);
+            }
+            menu.PositionServerSideMenu();
+        }
+    }
+
+    void ClientConnectinsChanged(ulong clientID){
+        menu.PositionServerSideMenu();
+    }
+
+    public void SwapOrientation(){
+        SetOrientation(!splitOrientation);
+    }
+
+    public void StopServer(){
+        
+        m_Discovery.StopDiscovery();
+        m_NetworkManager.Shutdown();
+        menu.ShowGeneral();
     }
 }

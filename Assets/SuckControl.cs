@@ -29,4 +29,16 @@ public class SuckControl : MonoBehaviour
         transform.rotation = boneBind.rotation*rotOffset;
         transform.position = boneBind.position;
     }
+
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
+    void OnEnable()
+    {
+        Debug.Log("Enabled");
+    }
+
+    void OnDisable(){
+        Debug.Log("Disabled");
+    }
 }

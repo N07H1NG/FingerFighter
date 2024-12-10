@@ -13,7 +13,7 @@ public class CameraCatchUp : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = Vector3.SmoothDamp(transform.position,target.position,ref speed,0.2f);
-        transform.forward = Vector3.SmoothDamp(transform.forward,target.forward,ref rotspeed,0.2f);
+        transform.position = Vector3.SmoothDamp(transform.position,target.position,ref speed,0.3f);
+        transform.forward = Vector3.SmoothDamp(transform.forward,target.forward,ref rotspeed,0.3f);
     }
 }

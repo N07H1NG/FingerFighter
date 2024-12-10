@@ -56,7 +56,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Noise:
-        m_Texture: {fileID: 2800000, guid: 0480947843ad179419b53b31f187857a, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 0, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseBlack:
@@ -93,21 +93,21 @@ Material:
     - _NormalThreshold: 0.9
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Scale: 6
+    - _Scale: 4
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Black: {r: 0.021496715, g: 0, b: 0.047169805, a: 1}
+    - _Black: {r: 0.047169782, g: 0, b: 0.11320752, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color1: {r: 1, g: 0.9927627, b: 0, a: 1}
     - _Color2: {r: 0, g: 1, b: 0.9051864, a: 1}
     - _Color3: {r: 1, g: 0, b: 0.98475456, a: 1}
-    - _Cyan: {r: 0, g: 0.958, b: 1, a: 1}
+    - _Cyan: {r: 0, g: 0.901, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Magenta: {r: 1, g: 0, b: 0.802, a: 1}
     - _Offset: {r: -0.001, g: 0.002, b: 0, a: 0}
-    - _Yellow: {r: 0.9882353, g: 0.7961477, b: 0.039215654, a: 1}
+    - _Yellow: {r: 0.972, g: 0.837, b: 0, a: 1}
   m_BuildTextureStacks: []

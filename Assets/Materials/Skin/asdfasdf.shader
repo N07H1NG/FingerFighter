@@ -1,4 +1,4 @@
-Shader "Custom/NewSurfaceShader"
+Shader "Custom/OutlineCombined"
 {
     Properties
     {
@@ -63,7 +63,7 @@ Shader "Custom/NewSurfaceShader"
             Stencil{
                 ref 1
                 comp notequal
-                pass zero
+                pass replace
             }
             //ZTest Always
             

@@ -36,8 +36,10 @@ public class MyPlayer : MonoBehaviour
     Vector3[]stepstarts = {Vector3.zero,Vector3.forward};
     [SerializeField] Transform head;
 
-    Vector3 cameraCatchPos = Vector3.zero;
-    Vector3 cameraCatchLook = Vector3.zero;
+    [SerializeField] GameObject suck;
+
+    Vector3 plrCatchUpPos = Vector3.zero;
+    Vector3 plrCatchUpDir = Vector3.zero;
     Animator popickAnimator;
     Vector3 targetForward;
     Vector3 headSpeed =  Vector3.zero;
@@ -48,7 +50,7 @@ public class MyPlayer : MonoBehaviour
     int last_step=0;
     float just_stepped=0;
     float just_upped=0;
-    Vector3 HeadPos = new Vector3(0,0,4f);
+    Vector3 HeadPos = new Vector3(0,0,6f);
     Vector3 HeadTarget;
     
     bool headControlled = false;
@@ -102,7 +104,7 @@ public class MyPlayer : MonoBehaviour
     }
     void Update()
     {
-        popickAnimator.SetBool("suck",headControlled);
+        
         unhandledTouchDeltaBuffer+=Time.deltaTime;
         if (calibrated){
             time_since_last_step+=Time.deltaTime;
@@ -130,17 +132,17 @@ public class MyPlayer : MonoBehaviour
 
             targetForward = -1*(Quaternion.AngleAxis(Vector2.SignedAngle(Vector2.up,dir),Vector3.up)*(foot[0].position-foot[1].position));
 
-            transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref cameraCatchLook,0.5f);
+            transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref plrCatchUpDir,0.5f);
 
             
-            cameraCatchPos.y *= (1f+2f*Time.deltaTime*just_stepped*math.clamp(0.5f/last_step_time,1f,3f));   
-            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref cameraCatchPos,0.25f);
+            plrCatchUpPos.y *= (1f+2f*Time.deltaTime*just_stepped*math.clamp(0.5f/last_step_time,1f,3f));   
+            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref plrCatchUpPos,0.25f);
 
             head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
-            Cam.forward = transform.forward+2.3f*head.up-Vector3.up;
-
+            //Cam.forward = transform.forward+2.3f*head.up-Vector3.up;
+            Cam.forward = transform.position+7f*head.up - Cam.position;
             
 
             MoveHead();
@@ -199,12 +201,16 @@ public class MyPlayer : MonoBehaviour
                 headTouch = touch.touchId;
                 if (touch.phase == TouchPhase.Began){
                     HeadTarget = HeadPos;
+                    headControlled = true;
+                    popickAnimator.SetBool("suck",headControlled);
+                    suck.SetActive(true);
                 }
-                headControlled = true;
                 HeadAttack(touch);
                 if (touch.phase == TouchPhase.Ended|| touch.phase == TouchPhase.Canceled){
                     
                     headControlled = false;
+                    popickAnimator.SetBool("suck",headControlled);
+                    suck.SetActive(false);
                     HeadTarget = HeadPos;
                 }
             }
@@ -321,7 +327,7 @@ public class MyPlayer : MonoBehaviour
 
     void MoveHead(){
         HeadTarget = HeadTarget.normalized*Math.Clamp(HeadTarget.magnitude+10f*Time.deltaTime*(headControlled?1f:0f),0,8.5f);
-        HeadTarget.y = Math.Clamp(HeadTarget.y,-5.5f,8.5f);
+        HeadTarget.y = Math.Clamp(HeadTarget.y,-3f,8.5f);
         
     }
 

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_NewSurfaceShader
-  m_Shader: {fileID: 4800000, guid: e98351ffd12da57419df6dd6a7eed434, type: 3}
+  m_Name: sqiggleblue 1
+  m_Shader: {fileID: 4800000, guid: f5d14bd3e4fc45c4f952e4ef7f27e431, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,15 +24,13 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 1c146dfe39c81e74386861c9bf57debb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Glossiness: 0.5
-    - _Metallic: 0
-    - _OutlineSize: 2.7
+    - _Glossiness: 0
+    - _Metallic: 1
     m_Colors:
-    - _Color: {r: 1, g: 0.6839622, b: 0.6839622, a: 1}
-    - _Outline: {r: 0.6320754, g: 0, b: 0.59389925, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

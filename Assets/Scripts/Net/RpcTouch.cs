@@ -53,7 +53,7 @@ public class RpcTouch : NetworkBehaviour
                 ServerOnlyNewTouchRpc(td, NetworkObjectId);
             }
             ServerFinishFrameRpc(NetworkObjectId);
-            print("YASOSALKA");
+            
         }
         else if(IsHost){
             foreach(Touch t in Touch.activeTouches){
