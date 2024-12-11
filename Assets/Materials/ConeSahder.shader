@@ -44,13 +44,16 @@ Shader "Custom/ConeSahder"
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex-float2(0,_Time.y)) * _Color;
+            fixed4 c = tex2D (_MainTex, IN.uv_MainTex-float2(0,_Time.z)) * _Color;
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Emission = c;
-            o.Alpha = c.a*lerp(0,1.4,(1-abs(2*IN.uv_MainTex.y-1)));
+            float p = 0.7;
+            float newmap = abs(IN.uv_MainTex.y-p)/(0.5-sign(IN.uv_MainTex.y-p)*(p-0.5));
+            o.Alpha= lerp(0,1,1-newmap)*c.a;
+            //o.Alpha = c.a*lerp(0,1.3,(1-abs(2*IN.uv_MainTex.y-1))/(sign(2*IN.uv_MainTex.y-1)));
         }
         ENDCG
         

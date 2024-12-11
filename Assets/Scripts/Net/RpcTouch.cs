@@ -70,7 +70,7 @@ public class RpcTouch : NetworkBehaviour
     [Rpc(SendTo.Server)]
     void ServerOnlyNewTouchRpc(NetworkTouchData td, ulong sourceNetworkObjectId)
     {
-        Debug.Log($"Server Received the RPC on NetworkObject #{sourceNetworkObjectId}");
+        //Debug.Log($"Server Received the RPC on NetworkObject #{sourceNetworkObjectId}");
         framtouches.Add(td);
         
         
@@ -79,7 +79,7 @@ public class RpcTouch : NetworkBehaviour
     [Rpc(SendTo.Server)]
     void ServerFinishFrameRpc(ulong sourceNetworkObjectId)
     {
-        Debug.Log($"Server Received the finish RPC on NetworkObject #{sourceNetworkObjectId}");
+        //Debug.Log($"Server Received the finish RPC on NetworkObject #{sourceNetworkObjectId}");
         
         plr.SingleFrameOfTouches(new List<NetworkTouchData>(framtouches));
         framtouches.Clear();
@@ -88,7 +88,7 @@ public class RpcTouch : NetworkBehaviour
     [Rpc(SendTo.Server)]
     void ServerStartInfoRpc(Vector2 screenSize, ulong sourceNetworkObjectId)
     {
-        Debug.Log($"Server Received info RPC on NetworkObject #{sourceNetworkObjectId}");
+        //Debug.Log($"Server Received info RPC on NetworkObject #{sourceNetworkObjectId}");
         plr.screenSize = screenSize;
     }
 

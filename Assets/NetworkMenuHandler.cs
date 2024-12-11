@@ -58,6 +58,7 @@ public class NetworkMenuHandler : MonoBehaviour
     {
         m_NetworkManager.OnClientConnectedCallback += ClientConnectinsChanged;
         m_NetworkManager.OnClientDisconnectCallback += ClientConnectinsChanged;
+        m_NetworkManager.OnClientStopped += ClientDisconnect;
     }
 
     /// <summary>
@@ -67,6 +68,7 @@ public class NetworkMenuHandler : MonoBehaviour
     {
         m_NetworkManager.OnClientConnectedCallback -= ClientConnectinsChanged;
         m_NetworkManager.OnClientDisconnectCallback -= ClientConnectinsChanged;
+        m_NetworkManager.OnClientStopped -= ClientDisconnect;
     }
     void Start()
     {
@@ -156,7 +158,9 @@ public class NetworkMenuHandler : MonoBehaviour
     }
 
     void ClientConnectinsChanged(ulong clientID){
-        menu.PositionServerSideMenu();
+        if (m_NetworkManager.IsServer){
+            menu.PositionServerSideMenu();
+        }
     }
 
     public void SwapOrientation(){
@@ -167,6 +171,10 @@ public class NetworkMenuHandler : MonoBehaviour
         
         m_Discovery.StopDiscovery();
         m_NetworkManager.Shutdown();
+        menu.ShowGeneral();
+    }
+
+    public void ClientDisconnect(bool host){
         menu.ShowGeneral();
     }
 }

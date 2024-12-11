@@ -1,4 +1,4 @@
-Shader "Custom/ConeSahderInside"
+Shader "Custom/ConeSahder"
 {
     Properties
     {
@@ -13,12 +13,12 @@ Shader "Custom/ConeSahderInside"
         Tags { "RenderType"="Opaque" "Queue"="Transparent"}
         LOD 200
         
-        Cull Front
-        Blend SrcAlpha OneMinusSrcAlpha
+        
+        
         CGPROGRAM
         
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows keepalpha
+        #pragma surface surf Standard fullforwardshadows alpha:blend
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -50,9 +50,7 @@ Shader "Custom/ConeSahderInside"
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Emission = c;
-            float p = 0.7;
-            float newmap = abs(IN.uv_MainTex.y-p)/(0.5-sign(IN.uv_MainTex.y-p)*(p-0.5));
-            o.Alpha= lerp(0,1,1-newmap)*c.a;
+            o.Alpha = c.a*lerp(0,1.3,(1-abs(2*IN.uv_MainTex.y-1))/(2-sign(2*IN.uv_MainTex.y-1)));
         }
         ENDCG
         
