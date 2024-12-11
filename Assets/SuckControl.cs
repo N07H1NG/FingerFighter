@@ -7,7 +7,7 @@ public class SuckControl : MonoBehaviour
     [SerializeField] Transform boneBind;
     
     Quaternion rotOffset;
-    float power = 50f;
+    [SerializeField] float power = 50f;
     
     
     /// <summary>
@@ -22,6 +22,7 @@ public class SuckControl : MonoBehaviour
     {
         
         rotOffset = Quaternion.Inverse(boneBind.rotation)*transform.rotation;
+        gameObject.SetActive(false);
     }
 
     // Update is called once per frame

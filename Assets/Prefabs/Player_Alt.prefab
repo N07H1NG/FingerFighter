@@ -587,6 +587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boneBind: {fileID: 4862570480555300538}
+  power: 50
 --- !u!64 &3970615539738482940
 MeshCollider:
   m_ObjectHideFlags: 0

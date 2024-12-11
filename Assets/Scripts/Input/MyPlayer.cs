@@ -260,6 +260,7 @@ public class MyPlayer : MonoBehaviour
                 
                 if(!lift){
                     foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
+                    
                     steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                     last_step = f;

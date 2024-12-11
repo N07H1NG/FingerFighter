@@ -9,6 +9,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 
 
@@ -135,6 +137,8 @@ public class NetworkMenuHandler : MonoBehaviour
         m_NetworkManager.StartServer();
         m_Discovery.StartServer();
         menu.ShowServer();
+        SceneManager.LoadSceneAsync("Playground",mode:LoadSceneMode.Additive);
+        
     }
     
     public void SetServerName(string newName){
@@ -172,6 +176,7 @@ public class NetworkMenuHandler : MonoBehaviour
         m_Discovery.StopDiscovery();
         m_NetworkManager.Shutdown();
         menu.ShowGeneral();
+        SceneManager.UnloadSceneAsync("Playground");
     }
 
     public void ClientDisconnect(bool host){
