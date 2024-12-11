@@ -50,7 +50,7 @@ Shader "Custom/ConeSahder"
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Emission = c;
-            float p = 0.7;
+            float p = 0.6;
             float newmap = abs(IN.uv_MainTex.y-p)/(0.5-sign(IN.uv_MainTex.y-p)*(p-0.5));
             o.Alpha= lerp(0,1,1-newmap)*c.a;
             //o.Alpha = c.a*lerp(0,1.3,(1-abs(2*IN.uv_MainTex.y-1))/(sign(2*IN.uv_MainTex.y-1)));

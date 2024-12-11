@@ -265,7 +265,7 @@ public class MyPlayer : MonoBehaviour
                 if(!lift){
                     //foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
                     Vector3 flat_distance = foot[f].position - foot[1-f].position;
-                    flat_distance.z = 0;
+                    flat_distance.y = 0;
                     flat_distance = flat_distance.normalized;
                     foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[1-f].position + turnQ*flat_distance*ScaleScreenDistance(newdir.magnitude));
                     steps[f] = foot[f].position-stepstarts[f];
@@ -276,7 +276,7 @@ public class MyPlayer : MonoBehaviour
                     print("liftend");
                     //foot[f].position = foot[1-f].position + (stepstarts[f] - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
                     Vector3 flat_distance = stepstarts[f] - foot[1-f].position;
-                    flat_distance.z = 0;
+                    flat_distance.y = 0;
                     flat_distance = flat_distance.normalized;
                     foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[1-f].position + flat_distance*ScaleScreenDistance(newdir.magnitude));
                     steps[f] = foot[f].position-stepstarts[f];

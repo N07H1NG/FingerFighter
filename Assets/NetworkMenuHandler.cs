@@ -22,6 +22,7 @@ using UnityEditor.Events;
 public class NetworkMenuHandler : MonoBehaviour
 {
 
+    public GameEvent startGameEvent;
     public bool splitOrientation = true;
     
     [SerializeField]
@@ -238,6 +239,9 @@ public class NetworkMenuHandler : MonoBehaviour
     void ClientConnected(ulong clientID){
         if(m_NetworkManager.IsServer){
             m_NetworkManager.ConnectedClients[clientID].PlayerObject.GetComponent<PlayerDisambigulation>().SetColor(playerColors[clientID]);
+            if (m_NetworkManager.ConnectedClients.Count>=2){
+                StartCoroutine(StartGame());
+            }
         }
         ClientConnectinsChanged(clientID);
         
@@ -246,6 +250,11 @@ public class NetworkMenuHandler : MonoBehaviour
     void ClientDisconnect(ulong clientID){
         Debug.Log("Player Disconnected");
         ClientConnectinsChanged(clientID);
+    }
+
+    IEnumerator StartGame(){
+        yield return new WaitForSeconds(3f);
+        startGameEvent.Raise();
     }
     
 }

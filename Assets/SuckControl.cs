@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class SuckControl : MonoBehaviour
@@ -7,6 +8,7 @@ public class SuckControl : MonoBehaviour
     [SerializeField] Transform boneBind;
     
     Quaternion rotOffset;
+    [SerializeField] Transform target;
     [SerializeField] float power = 20f;
     
     
@@ -59,8 +61,10 @@ public class SuckControl : MonoBehaviour
         if (enabled){
             Rigidbody rb = new Rigidbody();
             if(other.gameObject.TryGetComponent<Rigidbody>(out rb)){
-                float p = 100-(transform.position-other.transform.position).magnitude;
-                rb.AddForce((transform.position-other.transform.position).normalized*power*p);
+                Vector3 d = target.position-other.transform.position;
+                float p = math.max(2,50-d.magnitude);
+                rb.AddForce(d.normalized*power*p);
+                rb.velocity -= Vector3.ProjectOnPlane(rb.velocity,d)*math.min(Time.fixedDeltaTime*100f,1);
             }
         }
     }
