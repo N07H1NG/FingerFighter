@@ -7,6 +7,7 @@ using System.Linq;
 public class PlayerDisambigulation : NetworkBehaviour
 {
     int playerIndex;
+    [SerializeField] SkinnedMeshRenderer skinnedMesh;
     void Start(){
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
@@ -27,5 +28,9 @@ public class PlayerDisambigulation : NetworkBehaviour
     public void PositionCamera(bool hor){
         if (hor) GetComponentInChildren<Camera>().rect = new Rect(playerIndex/2f,0,0.5f,1);
         else GetComponentInChildren<Camera>().rect = new Rect(0,playerIndex/2f,1,0.5f);
+    }
+
+    public void SetColor(Color col){
+        skinnedMesh.material.SetColor("_Outline",col);
     }
 }

@@ -7,7 +7,7 @@ public class SuckControl : MonoBehaviour
     [SerializeField] Transform boneBind;
     
     Quaternion rotOffset;
-    [SerializeField] float power = 50f;
+    [SerializeField] float power = 20f;
     
     
     /// <summary>
@@ -59,7 +59,8 @@ public class SuckControl : MonoBehaviour
         if (enabled){
             Rigidbody rb = new Rigidbody();
             if(other.gameObject.TryGetComponent<Rigidbody>(out rb)){
-                rb.AddForce((transform.position-other.transform.position).normalized*power);
+                float p = 100-(transform.position-other.transform.position).magnitude;
+                rb.AddForce((transform.position-other.transform.position).normalized*power*p);
             }
         }
     }

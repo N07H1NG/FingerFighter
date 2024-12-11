@@ -16,7 +16,7 @@ Shader "Hidden/MyPostProcessing"
         _Yellow("Yellow Ink", Color) = (1,1,0,1)
         _Black("Black Ink", Color) = (0,0,0,1)
         _Noise("Noise Texture", 2D) = "black" {}
-        
+        _Dust("Dust Texture", 2D) = "black" {}
         _GridShift("Grid shift",Float) = 0.0
         
         _NoiseScale("Noise Scale",Float) = 1.0
@@ -79,7 +79,7 @@ Shader "Hidden/MyPostProcessing"
 
             sampler2D _MainTex;
             sampler2D _Noise;
-            sampler2D _NoiseBlack;
+            sampler2D _Dust;
             float _Scale;
             float _Angle1;
             float _Angle2;
@@ -126,7 +126,7 @@ Shader "Hidden/MyPostProcessing"
                 
                 
                 
-                float4 noise = tex2D(_Noise,i.vertex.xy/(32*_Scale)-float2(d1*_Scale,0));
+                //float4 noise = tex2D(_Noise,i.vertex.xy/(32*_Scale)-float2(d1*_Scale,0));
                 
                 
                 float2 scaler = float2(ddx(i.uv.x),ddy(i.uv.y))*0;
@@ -185,10 +185,10 @@ Shader "Hidden/MyPostProcessing"
                 float n3 = (1-max(abs(prikol3.x),abs(prikol3.y)))*tex2D(_Noise,squarenum3*0.796+prikol3/100+mul(rot3,float2(d1,0)));
                 float n4 = (1-max(abs(prikol4.x),abs(prikol4.y)))*tex2D(_Noise,squarenum4*0.796+prikol4/100+mul(rot4,float2(d1,0)));
                 //return n1;
-                dist1 += n1;
-                dist2 += n2;
-                dist3 += n3;
-                dist4 += n4; 
+                dist1 += n1*_NoiseScale;
+                dist2 += n2*_NoiseScale;
+                dist3 += n3*_NoiseScale;
+                dist4 += n4*_NoiseScale; 
                 
 
                 
@@ -199,16 +199,27 @@ Shader "Hidden/MyPostProcessing"
                 float4 cmyk4 = RGBtoCMYK(col4.xyz);
                 
                 cmyk = float4(cmyk.x,cmyk2.y,cmyk3.z,cmyk4.w);
-                //return cmyk.z;
-                //noise = float4(0,0,0,0);
-                //return cmyk.x;
-                cmyk = saturate(float4(cmyk.x>dist1,cmyk.y>dist2,cmyk.z>dist3,cmyk.w>dist4)); //IMPORTASNT!!
+                float dust1 = tex2D(_Dust,mul(rot1,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
+                float dust2 = tex2D(_Dust,mul(rot2,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
+                float dust3 = tex2D(_Dust,mul(rot3,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
+                float dust4 = tex2D(_Dust,mul(rot4,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
+                float4 dust = float4(dust1,dust2,dust3,dust4);
+                //dust = step(0.1,dust);
+                //return dust;
+                cmyk-=1*dust;
+                float4 dist = float4(dist1,dist2,dist3,dist4);
+                float4 d = saturate(cmyk-dist);
+                //return d;
+                cmyk = saturate((cmyk>dist)); //IMPORTASNT!!
+                cmyk = saturate(d*9+cmyk*0.6);
+                //cmyk = saturate(float4(cmyk.x-dist1,cmyk.y-dist2,cmyk.z-dist3,cmyk.w-dist4));
                 
-                
+                //cmyk = saturate(float4(cmyk.x>dist1,cmyk.y>dist2,cmyk.z>dist3,cmyk.w>dist4));
+                //return cmyk.w;
                 
                 float4 removal = 1-(cmyk.w*(1-_Black)+cmyk.x*(1-_Cyan) + cmyk.y*(1-_Magenta) + cmyk.z*(1-_Yellow));
                 float ink = (0.99+(3*cmyk.w+cmyk.x+cmyk.y+cmyk.z)/600)*saturate((cmyk.w+cmyk.x+cmyk.y+cmyk.z));
-                return bg*(1-ink)+ink*removal*bg;
+                return bg*(1-ink)+ink*removal*(1+bg)/2;
                 
                 
                 

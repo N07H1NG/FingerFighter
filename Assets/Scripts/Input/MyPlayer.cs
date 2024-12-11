@@ -231,6 +231,8 @@ public class MyPlayer : MonoBehaviour
         if(t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled){
             stepstarts[f] = foot[f].position;
             down[f] = false;
+            foot[f].GetComponent<Collider>().isTrigger=true;
+            foot[f].GetComponent<Rigidbody>().isKinematic = true;
             just_upped = 3f;
             if (!down[1-f]){
                 main=1-f;
@@ -246,6 +248,8 @@ public class MyPlayer : MonoBehaviour
         }else if(t.phase == TouchPhase.Began){
             audioSrc.PlayOneShot(cue.GetRandomClip());
             down[f] = true;
+            foot[f].GetComponent<Collider>().isTrigger=false;
+            foot[f].GetComponent<Rigidbody>().isKinematic = false;
             if (f==0){
                 popickAnimator.SetTrigger("step_l");
             }
@@ -259,22 +263,30 @@ public class MyPlayer : MonoBehaviour
                 time_since_last_step = 0f;
                 
                 if(!lift){
-                    foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
-                    
+                    //foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
+                    Vector3 flat_distance = foot[f].position - foot[1-f].position;
+                    flat_distance.z = 0;
+                    flat_distance = flat_distance.normalized;
+                    foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[1-f].position + turnQ*flat_distance*ScaleScreenDistance(newdir.magnitude));
                     steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                     last_step = f;
                 }
                 else{
                     print("liftend");
-                    foot[f].position = foot[1-f].position + (stepstarts[f] - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
+                    //foot[f].position = foot[1-f].position + (stepstarts[f] - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
+                    Vector3 flat_distance = stepstarts[f] - foot[1-f].position;
+                    flat_distance.z = 0;
+                    flat_distance = flat_distance.normalized;
+                    foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[1-f].position + flat_distance*ScaleScreenDistance(newdir.magnitude));
                     steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                     lift = false;
                 }
             }
             else{
-                foot[f].position = stepstarts[f];
+                //foot[f].position = stepstarts[f];
+                foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(stepstarts[f]);
                 
             }
             foreach(Coroutine c in liftCoroutines){
@@ -294,7 +306,8 @@ public class MyPlayer : MonoBehaviour
                 Vector2 estimated_dir = (estimatedpos-t.screenPosition)*MathF.Pow(-1,f);
                 float estimatedturn = Vector2.SignedAngle(dir,estimated_dir);
                 Quaternion estimatedturnQ = Quaternion.AngleAxis(-1*estimatedturn, Vector3.up);
-                foot[1-f].position = foot[f].position + estimatedturnQ*(foot[1-f].position - foot[f].position).normalized*ScaleScreenDistance(estimated_dir.magnitude);
+                //foot[1-f].position = foot[f].position + estimatedturnQ*(foot[1-f].position - foot[f].position).normalized*ScaleScreenDistance(estimated_dir.magnitude);
+                foot[1-f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[f].position + estimatedturnQ*(foot[1-f].position - foot[f].position).normalized*ScaleScreenDistance(estimated_dir.magnitude));
                 steps[1-f] = foot[1-f].position-stepstarts[1-f];
                 dir = estimated_dir;
                 pos[1-f] = estimatedpos;

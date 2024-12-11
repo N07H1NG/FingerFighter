@@ -31,13 +31,24 @@ public class NetworkMenuHandler : MonoBehaviour
     [SerializeField] TMP_Dropdown ServerDropdown;
     [SerializeField] MenuLogic menu;
 
+    [SerializeField] ColorPicker m_ColorPicker;
+
+    Dictionary<ulong,Color> playerColors = new Dictionary<ulong, Color>();
+
     List<IPAddress> addresses = new List<IPAddress>();
     Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new Dictionary<IPAddress, DiscoveryResponseData>();
     // Start is called before the first frame update
+
+    void OnApplicationQuit()
+    {
+        m_NetworkManager.Shutdown();
+    }
     void Awake()
     {
         m_Discovery = GetComponent<ExampleNetworkDiscovery>();
         m_NetworkManager = GetComponent<NetworkManager>();
+        m_NetworkManager.NetworkConfig.ConnectionApproval = true;
+        
     }
 
     #if UNITY_EDITOR
@@ -58,8 +69,8 @@ public class NetworkMenuHandler : MonoBehaviour
     /// </summary>
     void OnEnable()
     {
-        m_NetworkManager.OnClientConnectedCallback += ClientConnectinsChanged;
-        m_NetworkManager.OnClientDisconnectCallback += ClientConnectinsChanged;
+        m_NetworkManager.OnClientConnectedCallback += ClientConnected;
+        m_NetworkManager.OnClientDisconnectCallback += ClientDisconnect;
         m_NetworkManager.OnClientStopped += ClientDisconnect;
     }
 
@@ -68,8 +79,9 @@ public class NetworkMenuHandler : MonoBehaviour
     /// </summary>
     void OnDisable()
     {
-        m_NetworkManager.OnClientConnectedCallback -= ClientConnectinsChanged;
-        m_NetworkManager.OnClientDisconnectCallback -= ClientConnectinsChanged;
+        
+        m_NetworkManager.OnClientConnectedCallback -= ClientConnected;
+        m_NetworkManager.OnClientDisconnectCallback -= ClientDisconnect;
         m_NetworkManager.OnClientStopped -= ClientDisconnect;
     }
     void Start()
@@ -122,6 +134,8 @@ public class NetworkMenuHandler : MonoBehaviour
 
     public void Connect(){
         if (addresses.Count>0){
+            Color c = m_ColorPicker.color;
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = new byte[3]{(byte)(c.r*255f),(byte)(c.g*255f),(byte)(c.b*255f)};
             DiscoveryResponseData trg = discoveredServers[addresses[ServerDropdown.value]];
             UnityTransport transport = (UnityTransport)m_NetworkManager.NetworkConfig.NetworkTransport;
             transport.SetConnectionData(addresses[ServerDropdown.value].ToString(), trg.Port);
@@ -134,6 +148,7 @@ public class NetworkMenuHandler : MonoBehaviour
     }
 
     public void StartServer(){
+        m_NetworkManager.ConnectionApprovalCallback = CheckApproval;
         m_NetworkManager.StartServer();
         m_Discovery.StartServer();
         menu.ShowServer();
@@ -182,4 +197,55 @@ public class NetworkMenuHandler : MonoBehaviour
     public void ClientDisconnect(bool host){
         menu.ShowGeneral();
     }
+
+    private void CheckApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+    {
+        if (m_NetworkManager.ConnectedClients.Count>=2){
+            response.Approved = false;
+        }else{
+            response.Approved = true;
+        }
+        Debug.Log("Approving client");
+        // The client identifier to be authenticated
+        var clientId = request.ClientNetworkId;
+
+        // Additional connection data defined by user code
+        var connectionData = request.Payload;
+        playerColors[clientId] = new Color(connectionData[0]/255f,connectionData[1]/255f,connectionData[2]/255f);
+
+        // Your approval logic determines the following values
+        
+        response.CreatePlayerObject = true;
+
+        // The Prefab hash value of the NetworkPrefab, if null the default NetworkManager player Prefab is used
+        response.PlayerPrefabHash = null;
+
+        // Position to spawn the player object (if null it uses default of Vector3.zero)
+        response.Position = Vector3.zero+m_NetworkManager.ConnectedClients.Count*Vector3.forward*5;
+
+        // Rotation to spawn the player object (if null it uses the default of Quaternion.identity)
+        response.Rotation = Quaternion.identity;
+
+        // If response.Approved is false, you can provide a message that explains the reason why via ConnectionApprovalResponse.Reason
+        // On the client-side, NetworkManager.DisconnectReason will be populated with this message via DisconnectReasonMessage
+        //response.Reason = "Some reason for not approving the client";
+
+        // If additional approval steps are needed, set this to true until the additional steps are complete
+        // once it transitions from true to false the connection approval response will be processed.
+        response.Pending = false;
+    }
+
+    void ClientConnected(ulong clientID){
+        if(m_NetworkManager.IsServer){
+            m_NetworkManager.ConnectedClients[clientID].PlayerObject.GetComponent<PlayerDisambigulation>().SetColor(playerColors[clientID]);
+        }
+        ClientConnectinsChanged(clientID);
+        
+    }
+
+    void ClientDisconnect(ulong clientID){
+        Debug.Log("Player Disconnected");
+        ClientConnectinsChanged(clientID);
+    }
+    
 }

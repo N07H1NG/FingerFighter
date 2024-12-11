@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BG:
-        m_Texture: {fileID: 2800000, guid: fd89700fd3e54af40a0c0b78988c330e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 854d96c38a8694b45b2f85c2a0d77675, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -43,6 +43,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Dust:
+        m_Texture: {fileID: 2800000, guid: 4d49643fda03ce940a41f1209b934c61, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -56,7 +60,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Noise:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 9debe5cbf5f1a124b9d73852ed0fbb38, type: 3}
         m_Scale: {x: 0, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseBlack:
@@ -74,10 +78,10 @@ Material:
     m_Ints: []
     m_Floats:
     - _Angle: -0.8
-    - _Angle1: 0.18
-    - _Angle2: 1.09
+    - _Angle1: -1.02
+    - _Angle2: -0.29
     - _Angle3: 0.14
-    - _Angle4: 1.77
+    - _Angle4: 0.38
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DepthThreshold: 2.8
@@ -86,28 +90,28 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GridShift: 0.2
+    - _GridShift: 0.1
     - _Metallic: 0
     - _Mode: 0
-    - _NoiseScale: 19.1
+    - _NoiseScale: 3
     - _NormalThreshold: 0.9
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Scale: 4
+    - _Scale: 6
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Black: {r: 0.047169782, g: 0, b: 0.11320752, a: 1}
+    - _Black: {r: 0.028301895, g: 0.020959422, b: 0.028301895, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color1: {r: 1, g: 0.9927627, b: 0, a: 1}
     - _Color2: {r: 0, g: 1, b: 0.9051864, a: 1}
     - _Color3: {r: 1, g: 0, b: 0.98475456, a: 1}
-    - _Cyan: {r: 0, g: 0.901, b: 1, a: 1}
+    - _Cyan: {r: 0, g: 0.851, b: 0.915, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Magenta: {r: 1, g: 0, b: 0.802, a: 1}
+    - _Magenta: {r: 1, g: 0, b: 0.937, a: 1}
     - _Offset: {r: -0.001, g: 0.002, b: 0, a: 0}
     - _Yellow: {r: 0.972, g: 0.837, b: 0, a: 1}
   m_BuildTextureStacks: []
