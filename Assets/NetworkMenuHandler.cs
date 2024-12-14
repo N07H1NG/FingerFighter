@@ -23,6 +23,7 @@ public class NetworkMenuHandler : MonoBehaviour
 {
 
     public GameEvent startGameEvent;
+    public GameEvent playercountEvent;
     public bool splitOrientation = true;
     
     [SerializeField]
@@ -180,6 +181,7 @@ public class NetworkMenuHandler : MonoBehaviour
     void ClientConnectinsChanged(ulong clientID){
         if (m_NetworkManager.IsServer){
             menu.PositionServerSideMenu();
+            playercountEvent.Raise();
         }
     }
 
@@ -206,7 +208,7 @@ public class NetworkMenuHandler : MonoBehaviour
         }else{
             response.Approved = true;
         }
-        Debug.Log("Approving client");
+        //Debug.Log("Approving client");
         // The client identifier to be authenticated
         var clientId = request.ClientNetworkId;
 
@@ -239,7 +241,7 @@ public class NetworkMenuHandler : MonoBehaviour
     void ClientConnected(ulong clientID){
         if(m_NetworkManager.IsServer){
             m_NetworkManager.ConnectedClients[clientID].PlayerObject.GetComponent<PlayerDisambigulation>().SetColor(playerColors[clientID]);
-            if (m_NetworkManager.ConnectedClients.Count>=2){
+            if (m_NetworkManager.ConnectedClients.Count>=1){
                 StartCoroutine(StartGame());
             }
         }

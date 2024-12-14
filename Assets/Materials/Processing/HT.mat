@@ -78,7 +78,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Angle: -0.8
-    - _Angle1: -1.02
+    - _Angle1: -0.48
     - _Angle2: -0.29
     - _Angle3: 0.14
     - _Angle4: 0.38
@@ -90,14 +90,14 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GridShift: 0.1
+    - _GridShift: 0.3
     - _Metallic: 0
     - _Mode: 0
     - _NoiseScale: 3
     - _NormalThreshold: 0.9
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Scale: 6
+    - _Scale: 7
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -109,9 +109,9 @@ Material:
     - _Color1: {r: 1, g: 0.9927627, b: 0, a: 1}
     - _Color2: {r: 0, g: 1, b: 0.9051864, a: 1}
     - _Color3: {r: 1, g: 0, b: 0.98475456, a: 1}
-    - _Cyan: {r: 0, g: 0.851, b: 0.915, a: 1}
+    - _Cyan: {r: 0, g: 0.9716981, b: 0.9716981, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Magenta: {r: 1, g: 0, b: 0.937, a: 1}
+    - _Magenta: {r: 1, g: 0, b: 0.986, a: 1}
     - _Offset: {r: -0.001, g: 0.002, b: 0, a: 0}
-    - _Yellow: {r: 0.972, g: 0.837, b: 0, a: 1}
+    - _Yellow: {r: 1, g: 0.929, b: 0, a: 1}
   m_BuildTextureStacks: []

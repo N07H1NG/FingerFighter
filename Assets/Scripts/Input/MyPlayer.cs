@@ -142,7 +142,7 @@ public class MyPlayer : MonoBehaviour
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
             //Cam.forward = transform.forward+2.3f*head.up-Vector3.up;
-            Cam.forward = transform.position+7f*head.up - Cam.position;
+            Cam.forward = transform.position+9f*head.up+2*Vector3.up*head.up.y - Cam.position;
             
 
             MoveHead();
@@ -334,8 +334,9 @@ public class MyPlayer : MonoBehaviour
     void HeadAttack(Touch touch){
         
         Vector2 d = 200f*touch.delta/(minmax[0]+minmax[1]);
-        HeadTarget = Quaternion.AngleAxis(-1f*d.y,Vector3.right)*HeadTarget;
         HeadTarget = Quaternion.AngleAxis(d.x,Vector3.up)*HeadTarget;
+        HeadTarget = Quaternion.AngleAxis(-1f*d.y,Vector3.Cross(Vector3.up,HeadTarget))*HeadTarget;
+        
     }
 
 
