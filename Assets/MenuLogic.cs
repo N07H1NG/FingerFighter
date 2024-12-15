@@ -50,10 +50,10 @@ public class MenuLogic : MonoBehaviour
     public void PositionServerSideMenu(){
         int count = m_NetworkManger.ConnectedClients.Count;
         if (m_NetworkMenuHandler.splitOrientation){
-            swapText.text = "split:\nhorizontal";
+            swapText.text = "layout:\nhorizontal";
         }
         else{
-            swapText.text = "split:\nvertical";
+            swapText.text = "layout:\nvertical";
         }
         if (count==0){
             //serverSideRect.offsetMax = Vector2.zero;

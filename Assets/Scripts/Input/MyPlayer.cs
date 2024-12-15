@@ -107,8 +107,10 @@ public class MyPlayer : MonoBehaviour
         
         unhandledTouchDeltaBuffer+=Time.deltaTime;
         if (calibrated){
+            
             time_since_last_step+=Time.deltaTime;
             bool[] truedown = {down[0]||downdelay[0],down[1],downdelay[1]};
+            float fall = (!truedown[0]&& !truedown[1])?1f:0f;
             Vector3 center = (foot[0].position*(truedown[0]?5f:1f)+foot[1].position*(truedown[1]?5f:1f))/((truedown[0]?5f:1f)+(truedown[1]?5f:1f));
             center = (4f*center + foot[last_step].position*(truedown[last_step]?just_stepped:0f))/(4f+(truedown[last_step]?just_stepped:0f));
             if (time_since_last_step<last_step_time/3){
@@ -129,16 +131,16 @@ public class MyPlayer : MonoBehaviour
             
             center.y+=3.2f+((truedown[0]?0f:0.8f)+(truedown[1]?0f:0.8f))- (foot[0].position-foot[1].position).magnitude/6f;
             //center += steps[0]/15f+steps[1]/15f;
-            center.y+=lift?-2f:0;
+            center.y+=-2.6f*fall;
             targetForward = -1*(Quaternion.AngleAxis(Vector2.SignedAngle(Vector2.up,dir),Vector3.up)*(foot[0].position-foot[1].position));
-
+            if (fall==1f) targetForward = (Quaternion.AngleAxis(90f,Vector3.up)*(foot[0].position-foot[1].position));
             transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref plrCatchUpDir,0.5f);
 
             
             plrCatchUpPos.y *= (1f+2f*Time.deltaTime*just_stepped*math.clamp(0.5f/last_step_time,1f,3f));   
-            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref plrCatchUpPos,0.25f);
+            transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref plrCatchUpPos,0.25f-0.2f*fall);
 
-            head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget,ref headSpeed,0.2f);
+            head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget+1*transform.forward*fall,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
             //Cam.forward = transform.forward+2.3f*head.up-Vector3.up;
@@ -148,13 +150,15 @@ public class MyPlayer : MonoBehaviour
             MoveHead();
 
             for(int i = 0;i<2;i++){
-                Vector3 temptarget = truedown[i]?foot[i].position:transform.position+(foot[i].position-transform.position)/2.5f+Vector3.down/2f;
+                Vector3 temptarget = truedown[i]?foot[i].position:transform.position+(foot[i].position-transform.position)/(2.5f-1.7f*fall)+Vector3.down*(0.5f-1.1f*fall)+2f*transform.forward*fall;
+                
                 footTargets[i].position = Vector3.SmoothDamp(footTargets[i].position,temptarget,ref footSpeeds[i],0.15f);
                 Vector3 attempted_dir =(footTargets[i].position-center).normalized+steps[i]+2*transform.forward;
                 attempted_dir.y=0;
                 attempted_dir.Normalize();
                 
                 attempted_dir = (Vector3.Dot(attempted_dir,transform.forward)>=-0.3f)?attempted_dir:attempted_dir*-1f;
+                attempted_dir += 3*Vector3.up*fall;
                 footTargets[i].forward = Vector3.SmoothDamp(footTargets[i].forward,attempted_dir,ref footRots[i],0.3f);
             }
         }

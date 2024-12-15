@@ -34,10 +34,10 @@ Material:
     - _Depth: 20
     - _Frequency: 4
     - _FrequencyFalloff: 1.4
-    - _Glossiness: 0.859
-    - _Metallic: 0.686
+    - _Glossiness: 0.856
+    - _Metallic: 0.573
     - _Speed: 0.2
     - _SpeedFalloff: 1.2
     m_Colors:
-    - _Color: {r: 0.25013348, g: 0.47613716, b: 0.7264151, a: 1}
+    - _Color: {r: 0.3160377, g: 0.61971354, b: 1, a: 1}
   m_BuildTextureStacks: []

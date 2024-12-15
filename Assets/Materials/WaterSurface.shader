@@ -32,12 +32,12 @@ Shader "Custom/WaterSurface"
         {
             float2 uv_MainTex;
             float3 normal :NORMAL;
+            float4 color :COLOR;
         };
 
         struct disp
         {
             float height;
-            float3 normal;
             float2 derivative;
         };
 
@@ -64,12 +64,10 @@ Shader "Custom/WaterSurface"
             float h = a*exp(sin((dot(dir,uv)) * f + _Time.w * s)-1.0) ;
             float c =  cos((dot(dir,uv)) * f + _Time.w * s);
             c = c*h;
-            float3 t = float3(1.0, 0.0,dir.x*c);
-            float3 bin = float3(0.0, 1.0, dir.y*c);
-            float3 n = cross(t,bin);
+            
             disp res;
             res.height = h;
-            res.normal = n;
+
             res.derivative = float2(dir.x*c,dir.y*c);
             return res;
         }
@@ -90,7 +88,6 @@ Shader "Custom/WaterSurface"
             
             
             int depth = _Depth;
-            float3 norm = float3(0,0,0);
             float2 dis = float2(0,0);
             float2 dir = float2(0,1);
             float total_disp = 0;
@@ -98,18 +95,17 @@ Shader "Custom/WaterSurface"
                 disp d = displace(v.texcoord.xy+dis,dir,a,f,s);
                 total_disp+= d.height;
                 dis += d.derivative;
-                norm += d.normal;
                 a *= _AmplitudeFalloff;
 		        f *= _FrequencyFalloff;
 		        s *= _SpeedFalloff;
                 dir = mul(make_rotator(myhash(dir)),dir);
             }
-            float3 t = float3(1.0, 0.0,dis.x);
-            float3 bin = float3(0.0, 1.0, dis.y);
+            float3 t = float3(1, 0.0,dis.x);
+            float3 bin = float3(0.0, 1, dis.y);
             float3 n = cross(t,bin);
             v.vertex.z = total_disp;
             v.normal = n;
-
+            
         }
         
         void surf (Input IN, inout SurfaceOutputStandardSpecular o)
@@ -117,6 +113,7 @@ Shader "Custom/WaterSurface"
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c;
+           
             o.Specular = _Metallic;
               // 0=rough, 1=smooth
             o.Occlusion = 1;
