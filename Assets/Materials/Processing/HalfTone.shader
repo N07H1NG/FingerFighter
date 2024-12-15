@@ -18,8 +18,9 @@ Shader "Hidden/MyPostProcessing"
         _Noise("Noise Texture", 2D) = "black" {}
         _Dust("Dust Texture", 2D) = "black" {}
         _GridShift("Grid shift",Float) = 0.0
-        
+        _Sat("Saturation",Float) = 0.0
         _NoiseScale("Noise Scale",Float) = 1.0
+        _Contrast("Contrast",Float) = 1.0
     }
     SubShader
     {
@@ -77,6 +78,19 @@ Shader "Hidden/MyPostProcessing"
                 return clamp(float4(cmy, k), 0.0, 1.0);
             }
 
+            float3 CMYKtoRGB (float4 cmyk) {
+                float c = cmyk.x;
+                float m = cmyk.y;
+                float y = cmyk.z;
+                float k = cmyk.w;
+            
+                float invK = 1.0 - k;
+                float r = 1.0 - min(1.0, c * invK + k);
+                float g = 1.0 - min(1.0, m * invK + k);
+                float b = 1.0 - min(1.0, y * invK + k);
+                return clamp(float3(r, g, b), 0.0, 1.0);
+            }
+
             sampler2D _MainTex;
             sampler2D _Noise;
             sampler2D _Dust;
@@ -92,6 +106,8 @@ Shader "Hidden/MyPostProcessing"
             float4 _Yellow;
             float4 _Black;
             float _GridShift;
+            float _Sat;
+            float _Contrast;
 
             float remapdist(float r){
                 r/=2;
@@ -108,6 +124,16 @@ Shader "Hidden/MyPostProcessing"
                 float segm = (1.0/2) * (r*r) * (angle - sin(angle));
                 float area = PI * r*r - 4 * segm;
                 return area;
+            }
+
+            float4 resaturate(float4 col,float sat){
+                float doot = dot(col.rgb,float3(0.2126, 0.7152, 0.0722));
+                float3 c = lerp(float3(doot,doot,doot),col.rgb,sat);
+                return float4(c,col.a);
+            }
+
+            float4 contrast(float4 col, float contrast){
+                return  float4(((col.rgb - 0.5) * max(contrast + 1.0, 0)) + 0.5,1+col.w);
             }
 
             float4 frag (v2f i) : COLOR
@@ -139,7 +165,17 @@ Shader "Hidden/MyPostProcessing"
                 float4 col4 = tex2D(_MainTex,i.uv);
                 float4 bg = tex2D(_BG,i.vertex.xy/512);
                 
-                
+                col = resaturate(col,_Sat);
+                col2 = resaturate(col2,_Sat);
+                col3 = resaturate(col3,_Sat);
+                col4 = resaturate(col4,_Sat);
+
+                col =  contrast(col, _Contrast);
+                col2 = contrast(col2,_Contrast);
+                col3 = contrast(col3,_Contrast);
+                col4 = contrast(col4,_Contrast);
+                //return col4;
+
                 float2x2 rot1 = {cos(_Angle1),sin(_Angle1),-1*sin(_Angle1),cos(_Angle1)};
                 float2x2 rot2 = {cos(_Angle2),sin(_Angle2),-1*sin(_Angle2),cos(_Angle2)};
                 float2x2 rot3 = {cos(_Angle3),sin(_Angle3),-1*sin(_Angle3),cos(_Angle3)};
@@ -199,25 +235,29 @@ Shader "Hidden/MyPostProcessing"
                 float4 cmyk4 = RGBtoCMYK(col4.xyz);
                 
                 cmyk = float4(cmyk.x,cmyk2.y,cmyk3.z,cmyk4.w);
-                float dust1 = tex2D(_Dust,mul(rot1,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
-                float dust2 = tex2D(_Dust,mul(rot2,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
-                float dust3 = tex2D(_Dust,mul(rot3,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
-                float dust4 = tex2D(_Dust,mul(rot4,i.vertex.xy/(float2(4,3)*32*_Scale)-float2(d1*_Scale,0)));
-                float4 dust = float4(dust1,dust2,dust3,dust4);
+                float dust1 = tex2D(_Dust,mul(rot1,i.vertex.xy/(100*_Scale)+float2(d1*_Scale,0)));
+                float dust2 = tex2D(_Dust,mul(rot2,i.vertex.xy/(100*_Scale)+float2(d1*_Scale,0)));
+                float dust3 = tex2D(_Dust,mul(rot3,i.vertex.xy/(100*_Scale)+float2(d1*_Scale,0)));
+                float dust4 = tex2D(_Dust,mul(rot4,i.vertex.xy/(100*_Scale)+float2(d1*_Scale,0)));
+                //return dust1;
+                float4 dust = 1-pow(1-float4(dust1,dust2,dust3,dust4),1);
                 //dust = step(0.1,dust);
                 //return dust;
-                cmyk-=1*dust;
+                cmyk-=dust;
+                
+                //return cmyk.w;
                 float4 dist = float4(dist1,dist2,dist3,dist4);
                 float4 d = saturate(cmyk-dist);
                 //return d;
                 cmyk = saturate((cmyk>dist)); //IMPORTASNT!!
                 cmyk = saturate(d*9+cmyk*0.6);
-                //cmyk = saturate(float4(cmyk.x-dist1,cmyk.y-dist2,cmyk.z-dist3,cmyk.w-dist4));
                 
-                //cmyk = saturate(float4(cmyk.x>dist1,cmyk.y>dist2,cmyk.z>dist3,cmyk.w>dist4));
                 //return cmyk.w;
                 
+                
                 float4 removal = 1-(cmyk.w*(1-_Black)+cmyk.x*(1-_Cyan) + cmyk.y*(1-_Magenta) + cmyk.z*(1-_Yellow));
+                //return removal;
+                //return float4(CMYKtoRGB(cmyk),1);
                 float ink = (0.99+(3*cmyk.w+cmyk.x+cmyk.y+cmyk.z)/600)*saturate((cmyk.w+cmyk.x+cmyk.y+cmyk.z));
                 return bg*(1-ink)+ink*removal*(1+bg)/2;
                 

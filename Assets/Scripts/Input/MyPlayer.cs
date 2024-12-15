@@ -129,7 +129,7 @@ public class MyPlayer : MonoBehaviour
             
             center.y+=3.2f+((truedown[0]?0f:0.8f)+(truedown[1]?0f:0.8f))- (foot[0].position-foot[1].position).magnitude/6f;
             //center += steps[0]/15f+steps[1]/15f;
-
+            center.y+=lift?-2f:0;
             targetForward = -1*(Quaternion.AngleAxis(Vector2.SignedAngle(Vector2.up,dir),Vector3.up)*(foot[0].position-foot[1].position));
 
             transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref plrCatchUpDir,0.5f);
