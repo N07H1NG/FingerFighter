@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_WaterSurface
+  m_Name: WaterForPond
   m_Shader: {fileID: 4800000, guid: 7f9ceb8159b084c43bfd069da711de4f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,20 +24,22 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 3cd58442200f55343b693970e25a6e22, type: 3}
+        m_Scale: {x: 4, y: 4}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.1
-    - _AmplitudeFalloff: 0.71
+    - _Amplitude: 0.02
+    - _AmplitudeFalloff: 0.82
     - _Depth: 20
-    - _Frequency: 4
-    - _FrequencyFalloff: 1.4
-    - _Glossiness: 0.856
-    - _Metallic: 0.573
-    - _Speed: 0.2
-    - _SpeedFalloff: 1.2
+    - _Frequency: 12.27
+    - _FrequencyFalloff: 1.14
+    - _Glossiness: 1
+    - _Metallic: 2.27
+    - _Speed: 0.02
+    - _SpeedFalloff: 1.02
+    - _Tess: 1
     m_Colors:
-    - _Color: {r: 0.3160377, g: 0.61971354, b: 1, a: 1}
+    - _Color: {r: 0.8584906, g: 0.8584906, b: 0.8584906, a: 1}
+    - _Specular: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 1}
   m_BuildTextureStacks: []

@@ -98,15 +98,15 @@ Material:
     - _NormalThreshold: 0.9
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Sat: 1.2
-    - _Scale: 8
+    - _Sat: 1.02
+    - _Scale: 5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Black: {r: 0.031132098, g: 0, b: 0.103773594, a: 1}
+    - _Black: {r: 0.029027592, g: 0, b: 0.09433961, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color1: {r: 1, g: 0.9927627, b: 0, a: 1}
     - _Color2: {r: 0, g: 1, b: 0.9051864, a: 1}

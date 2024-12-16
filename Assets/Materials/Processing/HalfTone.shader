@@ -250,7 +250,7 @@ Shader "Hidden/MyPostProcessing"
                 float4 d = saturate(cmyk-dist);
                 //return d;
                 cmyk = saturate((cmyk>dist)); //IMPORTASNT!!
-                cmyk = saturate(d*9+cmyk*0.6);
+                //cmyk = saturate(d*9+cmyk*0.6);
                 
                 //return cmyk.w;
                 

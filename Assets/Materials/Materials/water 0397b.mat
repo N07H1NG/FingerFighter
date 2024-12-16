@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SkinOutlineCombined
-  m_Shader: {fileID: 4800000, guid: e98351ffd12da57419df6dd6a7eed434, type: 3}
+  m_Name: water 0397b
+  m_Shader: {fileID: 4800000, guid: 7f9ceb8159b084c43bfd069da711de4f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,15 +24,20 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: a886059d92042994da200f94ea9dfcc4, type: 3}
-        m_Scale: {x: 3, y: 3}
+        m_Texture: {fileID: 2800000, guid: 3cd58442200f55343b693970e25a6e22, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Glossiness: 0.126
-    - _Metallic: 0
-    - _OutlineSize: 1.56
+    - _Amplitude: 0.5
+    - _AmplitudeFalloff: 0.5
+    - _Depth: 10
+    - _Frequency: 0.5
+    - _FrequencyFalloff: 0.5
+    - _Glossiness: 0.5
+    - _Speed: 0.5
+    - _SpeedFalloff: 0.5
     m_Colors:
-    - _Color: {r: 1, g: 0, b: 0, a: 1}
-    - _Outline: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Specular: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
