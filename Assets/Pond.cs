@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Pond : MonoBehaviour
 {
+    int score = 0;
+    [SerializeField] int pondNumber;
+    [SerializeField]TMP_Text text; 
+    MeshRenderer water;
     // Start is called before the first frame update
     void Start()
     {
-        
+        water = GetComponent<MeshRenderer>();
+        UpdateScore(score);
     }
 
     // Update is called once per frame
@@ -22,6 +29,25 @@ public class Pond : MonoBehaviour
     /// <param name="other">The other Collider involved in this collision.</param>
     void OnTriggerEnter(Collider other)
     {
-        
+        if (other.gameObject.CompareTag("Fish")){
+            UpdateScore(score+1);
+            Destroy(other.gameObject);
+        }
+
+    }
+
+    void UpdateScore(int newScore){
+        score = newScore;
+        text.text = score.ToString();
+    }
+
+    public void SetColor(Color newColor){
+        water.material.color = newColor;
+    }
+
+    public void PlayerConnect(int playerCount,ulong ClientID,Color playerColor){
+        if(playerCount == pondNumber+1){
+            SetColor(playerColor);
+        }
     }
 }

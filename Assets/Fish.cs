@@ -17,7 +17,7 @@ public class Fish : MonoBehaviour
     {
         light = GetComponent<Light>();
         transform.localScale += new Vector3(Random.Range(0f,3f),Random.Range(0f,1f),Random.Range(0f,3f));
-        transform.localScale *= Random.Range(0.4f,0.8f);
+        transform.localScale *= Random.Range(0.6f,1.1f);
         Color c = Random.ColorHSV(0f, 1f, 0.8f, 1f, 0.8f, 1f);
         
         GetComponentInChildren<SkinnedMeshRenderer>().material.SetColor("_EmissionColor",c*1.3f);

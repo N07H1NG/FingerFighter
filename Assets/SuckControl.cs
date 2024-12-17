@@ -11,6 +11,7 @@ public class SuckControl : MonoBehaviour
     [SerializeField] Transform target;
     [SerializeField] float power = 20f;
     
+    float maxdist;
     
     /// <summary>
     /// Awake is called when the script instance is being loaded.
@@ -25,6 +26,8 @@ public class SuckControl : MonoBehaviour
         
         rotOffset = Quaternion.Inverse(boneBind.rotation)*transform.rotation;
         gameObject.SetActive(false);
+        
+        
     }
 
     // Update is called once per frame
@@ -33,7 +36,8 @@ public class SuckControl : MonoBehaviour
         
         transform.rotation = boneBind.rotation*rotOffset;
         transform.position = boneBind.position;
-
+        Debug.DrawLine(transform.position, transform.position + transform.forward.normalized*-1f*maxdist, Color.magenta);
+        print(maxdist);
         
     }
 
@@ -42,12 +46,10 @@ public class SuckControl : MonoBehaviour
     /// </summary>
     void OnEnable()
     {
-        
-        Debug.Log("Enabled");
+        maxdist = GetComponent<Collider>().bounds.size.z;
     }
 
     void OnDisable(){
-        Debug.Log("Disabled");
     }
 
 
@@ -62,9 +64,10 @@ public class SuckControl : MonoBehaviour
             Rigidbody rb = new Rigidbody();
             if(other.gameObject.TryGetComponent<Rigidbody>(out rb)){
                 Vector3 d = target.position-other.transform.position;
-                float p = math.max(2,50-d.magnitude);
+                float p = math.max(maxdist/10f,maxdist-d.magnitude);
+                
                 rb.AddForce(d.normalized*power*p);
-                rb.velocity -= Vector3.ProjectOnPlane(rb.velocity,d)*math.min(Time.fixedDeltaTime*100f,1);
+                rb.velocity -= Vector3.ProjectOnPlane(rb.velocity,d)*math.min(Time.fixedDeltaTime*250f,1);
             }
         }
     }

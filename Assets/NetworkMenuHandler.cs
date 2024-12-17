@@ -24,6 +24,8 @@ public class NetworkMenuHandler : MonoBehaviour
 
     public GameEvent startGameEvent;
     public GameEvent playercountEvent;
+
+    public PlayerConnectionEvent connectionEvent;
     public bool splitOrientation = true;
     
     [SerializeField]
@@ -35,7 +37,7 @@ public class NetworkMenuHandler : MonoBehaviour
 
     [SerializeField] ColorPicker m_ColorPicker;
 
-    Dictionary<ulong,Color> playerColors = new Dictionary<ulong, Color>();
+    public Dictionary<ulong,Color> playerColors = new Dictionary<ulong, Color>();
 
     List<IPAddress> addresses = new List<IPAddress>();
     Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new Dictionary<IPAddress, DiscoveryResponseData>();
@@ -241,8 +243,10 @@ public class NetworkMenuHandler : MonoBehaviour
     void ClientConnected(ulong clientID){
         if(m_NetworkManager.IsServer){
             m_NetworkManager.ConnectedClients[clientID].PlayerObject.GetComponent<PlayerDisambigulation>().SetColor(playerColors[clientID]);
+            connectionEvent.Raise(m_NetworkManager.ConnectedClients.Count,clientID,playerColors[clientID]);
             if (m_NetworkManager.ConnectedClients.Count>=1){
                 StartCoroutine(StartGame());
+                
             }
         }
         ClientConnectinsChanged(clientID);
