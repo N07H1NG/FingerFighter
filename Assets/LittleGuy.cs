@@ -24,17 +24,18 @@ public class LittleGuy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        agent.updateRotation =true;
     }
 
     IEnumerator Roam(){
         while(true){
             ChooseTarget();
-            yield return null;
-            animator.SetBool("Running",true);
+            //yield return null;
+            //animator.SetBool("Running",true);
            
             yield return new WaitUntil(IsPathComplete);
-            animator.SetBool("Running",false);
-            yield return new WaitForSeconds(10f);
+            //animator.SetBool("Running",false);
+            yield return new WaitForSeconds(3f);
         }
     }
 

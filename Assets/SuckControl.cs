@@ -67,7 +67,7 @@ public class SuckControl : MonoBehaviour
                 float p = math.max(maxdist/10f,maxdist-d.magnitude);
                 
                 rb.AddForce(d.normalized*power*p);
-                rb.velocity -= Vector3.ProjectOnPlane(rb.velocity,d)*math.min(Time.fixedDeltaTime*250f,1);
+                rb.velocity -= Vector3.ProjectOnPlane(rb.velocity,d)*math.min(Time.fixedDeltaTime*400f,1);
             }
         }
     }
