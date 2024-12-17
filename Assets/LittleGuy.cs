@@ -10,32 +10,44 @@ public class LittleGuy : MonoBehaviour
 {
     Animator animator;
     NavMeshAgent agent;
+    Vector3 lastdir = Vector3.zero;
+    RaycastHit downhit = new RaycastHit();
     // Start is called before the first frame update
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = true;
-        agent.updateUpAxis = true;
+        //agent.updateRotation = false;
+        agent.updateUpAxis = false;
         animator = GetComponentInChildren<Animator>();
         StartCoroutine(Roam());
         
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        agent.updateRotation =true;
+
+        transform.rotation = Quaternion.FromToRotation(transform.up,downhit.normal)*transform.rotation;        
+      
     }
 
     IEnumerator Roam(){
+        int i = 0;
         while(true){
-            ChooseTarget();
-            //yield return null;
-            //animator.SetBool("Running",true);
+            ChooseTarget(i);
+            yield return null;
+            animator.SetBool("Running",true);
            
             yield return new WaitUntil(IsPathComplete);
-            //animator.SetBool("Running",false);
-            yield return new WaitForSeconds(3f);
+            animator.SetBool("Running",false);
+            if (i<3){
+                yield return null;
+            }
+            else{
+                yield return new WaitForSeconds(10f);
+                
+            }
+            i = (i+1)%4;
         }
     }
 
@@ -43,14 +55,14 @@ public class LittleGuy : MonoBehaviour
         return agent.remainingDistance<=agent.stoppingDistance;
     }
 
-    void ChooseTarget(){
+    void ChooseTarget(int farther){
         NavMeshHit hit = new NavMeshHit();
         bool found = false;
         int i =0;
         while(!found){
             float a = Random.Range(0f,360f);
-            Vector3 trg = transform.position+50*new Vector3(math.cos(a),0,math.sin(a));
-            found = NavMesh.SamplePosition(trg,out hit, 10f,NavMesh.AllAreas);
+            Vector3 trg = transform.position+40f*new Vector3(math.cos(a),0,math.sin(a))+lastdir*10f*farther;
+            found = NavMesh.SamplePosition(trg,out hit, 5f,NavMesh.AllAreas);
             i++;
             if (i>100){
                 found = true;
@@ -58,6 +70,7 @@ public class LittleGuy : MonoBehaviour
             }
             
         }
+        lastdir = (hit.position-transform.position).normalized;
         agent.SetDestination(hit.position);
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 public class PlayerDisambigulation : NetworkBehaviour
 {
     int playerIndex;
+    [SerializeField] SuckControl sck;
     [SerializeField] SkinnedMeshRenderer skinnedMesh;
     void Start(){
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -20,7 +21,7 @@ public class PlayerDisambigulation : NetworkBehaviour
         }else{
             GetComponentInChildren<MyPlayer>().enabled = true;
             playerIndex = Array.IndexOf(NetworkManager.ConnectedClientsIds.ToArray(),OwnerClientId);
-            
+            sck.playerIndex = OwnerClientId;
             PositionCamera(NetworkManager.GetComponent<NetworkMenuHandler>().splitOrientation);
         }
     }

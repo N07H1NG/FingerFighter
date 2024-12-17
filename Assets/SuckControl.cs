@@ -13,6 +13,8 @@ public class SuckControl : MonoBehaviour
     
     float maxdist;
     
+    public ulong playerIndex;
+    
     /// <summary>
     /// Awake is called when the script instance is being loaded.
     /// </summary>
@@ -61,13 +63,19 @@ public class SuckControl : MonoBehaviour
     void OnTriggerStay(Collider other)
     {
         if (enabled){
-            Rigidbody rb = new Rigidbody();
-            if(other.gameObject.TryGetComponent<Rigidbody>(out rb)){
+            Rigidbody rb;
+            Fish f;
+            if(other.gameObject.TryGetComponent<Rigidbody>(out rb) && other.gameObject.TryGetComponent<Fish>(out f)){
+                
                 Vector3 d = target.position-other.transform.position;
                 float p = math.max(maxdist/10f,maxdist-d.magnitude);
                 
                 rb.AddForce(d.normalized*power*p);
                 rb.velocity -= Vector3.ProjectOnPlane(rb.velocity,d)*math.min(Time.fixedDeltaTime*400f,1);
+                if (p>f.lastGuyPower||f.LastGuyID ==playerIndex){
+                    f.LastGuyID = playerIndex;
+                    f.lastGuyPower = p; 
+                }
             }
         }
     }

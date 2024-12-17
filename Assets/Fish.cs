@@ -11,11 +11,13 @@ public class Fish : MonoBehaviour
     
     Rigidbody rb;
     bool grounded;
-    Light light;
+    Light flickerLight;
+    public ulong LastGuyID;
+    public float lastGuyPower =0f;
     // Start is called before the first frame update
     void Start()
     {
-        light = GetComponent<Light>();
+        flickerLight = GetComponent<Light>();
         transform.localScale += new Vector3(Random.Range(0f,3f),Random.Range(0f,1f),Random.Range(0f,3f));
         transform.localScale *= Random.Range(0.6f,1.1f);
         Color c = Random.ColorHSV(0f, 1f, 0.8f, 1f, 0.8f, 1f);
@@ -66,7 +68,7 @@ public class Fish : MonoBehaviour
         float timer = 0;
         while(true){
             timer += Time.deltaTime;
-            light.intensity = 3+math.sin(timer);
+            flickerLight.intensity = 3+math.sin(timer);
             yield return null;
             
             

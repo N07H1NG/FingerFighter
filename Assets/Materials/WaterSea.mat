@@ -41,5 +41,5 @@ Material:
     - _Tess: 4
     m_Colors:
     - _Color: {r: 0, g: 0.62491286, b: 0.6886792, a: 1}
-    - _Specular: {r: 0.6792453, g: 0.38768244, b: 0.6468496, a: 1}
+    - _Specular: {r: 0.9056604, g: 0.55108577, b: 0.86732787, a: 1}
   m_BuildTextureStacks: []

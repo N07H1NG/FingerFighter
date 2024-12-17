@@ -38,7 +38,6 @@ public class NetworkMenuHandler : MonoBehaviour
     [SerializeField] ColorPicker m_ColorPicker;
 
     public Dictionary<ulong,Color> playerColors = new Dictionary<ulong, Color>();
-
     List<IPAddress> addresses = new List<IPAddress>();
     Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new Dictionary<IPAddress, DiscoveryResponseData>();
     // Start is called before the first frame update
@@ -244,7 +243,7 @@ public class NetworkMenuHandler : MonoBehaviour
         if(m_NetworkManager.IsServer){
             m_NetworkManager.ConnectedClients[clientID].PlayerObject.GetComponent<PlayerDisambigulation>().SetColor(playerColors[clientID]);
             connectionEvent.Raise(m_NetworkManager.ConnectedClients.Count,clientID,playerColors[clientID]);
-            if (m_NetworkManager.ConnectedClients.Count>=1){
+            if (m_NetworkManager.ConnectedClients.Count==2){
                 StartCoroutine(StartGame());
                 
             }

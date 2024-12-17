@@ -18,6 +18,7 @@ public class SplitScreenAudioSource : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (SplitScreenAudioSrcManager.singleton != null) 
         audioSrc.volume = vol*(1-math.clamp((transform.position-SplitScreenAudioSrcManager.singleton.average_location).magnitude/audioSrc.maxDistance,0,1));
     }
 }

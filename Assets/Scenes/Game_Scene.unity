@@ -696,7 +696,7 @@ Camera:
   m_GameObject: {fileID: 1414830547}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 4
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -1078,7 +1078,7 @@ PrefabInstance:
       objectReference: {fileID: 273590096}
     - target: {fileID: 6546413645203976935, guid: dd55ba3f6c83c9149b163ca069ade304, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00074768066
+      value: -0.00088500977
       objectReference: {fileID: 0}
     - target: {fileID: 7665154930313586457, guid: dd55ba3f6c83c9149b163ca069ade304, type: 3}
       propertyPath: m_AnchorMax.x

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,25 +7,24 @@ using UnityEngine;
 
 public class Pond : MonoBehaviour
 {
-    int score = 0;
-    [SerializeField] int pondNumber;
+    Dictionary<ulong,int> score =  new Dictionary<ulong, int>();
+    ulong[] order = new ulong[4];
+    Color[] colors = new Color[4];
     [SerializeField]TMP_Text text; 
-    MeshRenderer water;
+    [SerializeField]TMP_Text text2; 
+    [SerializeField]SkinnedMeshRenderer body;
     Vector3 correction = Vector3.zero;
     Vector3 speed = Vector3.zero;
     // Start is called before the first frame update
     void Start()
     {
-        water = GetComponent<MeshRenderer>();
-        UpdateScore(score);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        //correction = Vector3.SmoothDamp(correction,Vector3.up-transform.forward,ref speed,0.2f);
-        //transform.rotation = Quaternion.FromToRotation(transform.forward,transform.forward+12*Time.deltaTime*correction)*transform.rotation;
-        //transform.up = transform.parent.up;
+        
     }
 
     /// <summary>
@@ -33,25 +33,46 @@ public class Pond : MonoBehaviour
     /// <param name="other">The other Collider involved in this collision.</param>
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Fish")){
-            UpdateScore(score+1);
+        Fish f;
+        if (other.gameObject.TryGetComponent<Fish>(out f)){
+            score[f.LastGuyID]+=1;
+            UpdateScore();
             Destroy(other.gameObject);
         }
 
     }
 
-    void UpdateScore(int newScore){
-        score = newScore;
-        text.text = score.ToString();
+    void UpdateScore(){
+        
+        text.text = score[order[0]].ToString();
+        text2.text = score[order[1]].ToString();
+        if (score[order[0]]>score[order[1]]){
+            SetColor(colors[0]);
+        }else if(score[order[0]]<score[order[1]]){
+            SetColor(colors[1]);
+        }
+        else{
+            SetColor(Color.white);
+        }
     }
 
     public void SetColor(Color newColor){
-        water.material.color = newColor;
+        body.material.SetColor("_Outline", newColor);
     }
 
     public void PlayerConnect(int playerCount,ulong ClientID,Color playerColor){
-        if(playerCount == pondNumber+1){
-            SetColor(playerColor);
+        order[playerCount-1]=ClientID;
+        score[ClientID] = 0;
+        
+        if (playerCount-1==0){
+            //text.fontSharedMaterial.SetColor("_FaceColor",playerColor);
+            text.fontSharedMaterial.SetColor("_OutlineColor",playerColor);
+            colors[0] = playerColor;
+        }
+        else if (playerCount-1==1){
+            //text.fontSharedMaterial.SetColor("_FaceColor",playerColor);
+            text2.fontSharedMaterial.SetColor("_OutlineColor",playerColor);
+            colors[1] = playerColor;
         }
     }
 }

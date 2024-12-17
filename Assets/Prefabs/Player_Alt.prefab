@@ -590,6 +590,7 @@ MonoBehaviour:
   boneBind: {fileID: 305521212173608168}
   target: {fileID: 8243097552472465423}
   power: 30
+  playerIndex: 0
 --- !u!64 &3970615539738482940
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1347,6 +1348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3015732709e8baa428977a49493e1273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sck: {fileID: 835005721022511916}
   skinnedMesh: {fileID: 8387313138621201665}
 --- !u!1 &9158261662498685013
 GameObject:
