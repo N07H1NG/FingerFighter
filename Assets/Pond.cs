@@ -10,6 +10,8 @@ public class Pond : MonoBehaviour
     [SerializeField] int pondNumber;
     [SerializeField]TMP_Text text; 
     MeshRenderer water;
+    Vector3 correction = Vector3.zero;
+    Vector3 speed = Vector3.zero;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +22,9 @@ public class Pond : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //correction = Vector3.SmoothDamp(correction,Vector3.up-transform.forward,ref speed,0.2f);
+        //transform.rotation = Quaternion.FromToRotation(transform.forward,transform.forward+12*Time.deltaTime*correction)*transform.rotation;
+        //transform.up = transform.parent.up;
     }
 
     /// <summary>
