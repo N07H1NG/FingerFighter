@@ -135,9 +135,8 @@ GameObject:
   - component: {fileID: 273590091}
   - component: {fileID: 273590095}
   - component: {fileID: 273590096}
-  - component: {fileID: 273590097}
-  - component: {fileID: 273590098}
   - component: {fileID: 273590099}
+  - component: {fileID: 273590100}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -218,7 +217,7 @@ Transform:
   m_GameObject: {fileID: 273590089}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.3160439, y: 2.6414526, z: 7.663597}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -275,47 +274,7 @@ MonoBehaviour:
   ServerDropdown: {fileID: 1982582719}
   menu: {fileID: 1615994598}
   m_ColorPicker: {fileID: 1309355874}
---- !u!114 &273590097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 273590089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85e86a29858347144b150f2f2a0891ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  average_location: {x: 0, y: 0, z: 0}
---- !u!114 &273590098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 273590089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d35e72ee066ca7448fc384dc2d3c06a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: e71b3da43281db04f8e4088bdd057920, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 273590097}
-        m_TargetAssemblyTypeName: SplitScreenAudioSrcManager, Assembly-CSharp
-        m_MethodName: RecountPlayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  player_count: 2
 --- !u!82 &273590099
 AudioSource:
   m_ObjectHideFlags: 0
@@ -328,7 +287,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 7c0f65882b9d20040af28525157e4ef7, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -412,6 +371,34 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &273590100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273590089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d35e72ee066ca7448fc384dc2d3c06a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: c709b998a285d534da2d4ef58721c6d3, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 273590096}
+        m_TargetAssemblyTypeName: NetworkMenuHandler, Assembly-CSharp
+        m_MethodName: Calibrated
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &985927763
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,6 +774,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1782011207}
   - component: {fileID: 1782011206}
+  - component: {fileID: 1782011209}
+  - component: {fileID: 1782011208}
   m_Layer: 0
   m_Name: AudioListener
   m_TagString: Untagged
@@ -817,6 +806,48 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1782011208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782011205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d35e72ee066ca7448fc384dc2d3c06a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: e71b3da43281db04f8e4088bdd057920, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1782011209}
+        m_TargetAssemblyTypeName: SplitScreenAudioSrcManager, Assembly-CSharp
+        m_MethodName: RecountPlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1782011209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782011205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85e86a29858347144b150f2f2a0891ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_NetworkManager: {fileID: 273590092}
+  locations: []
 --- !u!114 &1982582719 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7772510067835190104, guid: dd55ba3f6c83c9149b163ca069ade304, type: 3}
@@ -1078,7 +1109,7 @@ PrefabInstance:
       objectReference: {fileID: 273590096}
     - target: {fileID: 6546413645203976935, guid: dd55ba3f6c83c9149b163ca069ade304, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00088500977
+      value: -0.00021362305
       objectReference: {fileID: 0}
     - target: {fileID: 7665154930313586457, guid: dd55ba3f6c83c9149b163ca069ade304, type: 3}
       propertyPath: m_AnchorMax.x

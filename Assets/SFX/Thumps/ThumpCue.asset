@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7019311d649a24298f569d507d69f9, type: 3}
+  m_Name: ThumpCue
+  m_EditorClassIdentifier: 
+  containClips:
+  - {fileID: 8300000, guid: c1b9d6a3d0c5a844794d0955c0de6bb4, type: 3}
+  - {fileID: 8300000, guid: 03bb524c3686312419967d96fe931d9a, type: 3}
+  - {fileID: 8300000, guid: 4877d916dc3b3904399933a718526c19, type: 3}
+  - {fileID: 8300000, guid: 45e6d26cc7c3bfc41b1bfa0d47f9aa07, type: 3}
+  - {fileID: 8300000, guid: 233c2321a6540d644b4a85d7aa048f8c, type: 3}
+  - {fileID: 8300000, guid: 149d98f561fb3e047a8a38227565a2ed, type: 3}
+  - {fileID: 8300000, guid: 4d456f359c657ac46b97f54b75d20c40, type: 3}
+  - {fileID: 8300000, guid: ce1c442b2ad77704798fb8d8052f1383, type: 3}

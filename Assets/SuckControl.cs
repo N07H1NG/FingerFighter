@@ -66,7 +66,7 @@ public class SuckControl : MonoBehaviour
             Rigidbody rb;
             Fish f;
             if(other.gameObject.TryGetComponent<Rigidbody>(out rb) && other.gameObject.TryGetComponent<Fish>(out f)){
-                
+                f.touched = true;
                 Vector3 d = target.position-other.transform.position;
                 float p = math.max(maxdist/10f,maxdist-d.magnitude);
                 

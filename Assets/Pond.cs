@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -35,8 +36,10 @@ public class Pond : MonoBehaviour
     {
         Fish f;
         if (other.gameObject.TryGetComponent<Fish>(out f)){
-            score[f.LastGuyID]+=1;
-            UpdateScore();
+            if (f.touched){
+                score[f.LastGuyID]+=1;
+                UpdateScore();
+            }
             Destroy(other.gameObject);
         }
 
@@ -63,15 +66,20 @@ public class Pond : MonoBehaviour
     public void PlayerConnect(int playerCount,ulong ClientID,Color playerColor){
         order[playerCount-1]=ClientID;
         score[ClientID] = 0;
+        Color.RGBToHSV(playerColor,out float hue,out float sat,out float val);
+        Color outlinecol = Color.HSVToRGB(hue,1-math.pow(1-sat,3),val+0.4f*math.sign(0.5f-val));
         
         if (playerCount-1==0){
-            //text.fontSharedMaterial.SetColor("_FaceColor",playerColor);
-            text.fontSharedMaterial.SetColor("_OutlineColor",playerColor);
+            
+            
+            text.fontSharedMaterial.SetColor("_FaceColor",playerColor);
+            text.fontSharedMaterial.SetColor("_OutlineColor",outlinecol);
             colors[0] = playerColor;
         }
         else if (playerCount-1==1){
-            //text.fontSharedMaterial.SetColor("_FaceColor",playerColor);
-            text2.fontSharedMaterial.SetColor("_OutlineColor",playerColor);
+            
+            text2.fontSharedMaterial.SetColor("_FaceColor",playerColor);
+            text2.fontSharedMaterial.SetColor("_OutlineColor",outlinecol);
             colors[1] = playerColor;
         }
     }

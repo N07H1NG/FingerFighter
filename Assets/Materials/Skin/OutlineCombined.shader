@@ -89,7 +89,6 @@ Shader "Custom/OutlineCombined"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                float2 to_edge : TEXCOORD1;
             };
 
             
@@ -101,24 +100,16 @@ Shader "Custom/OutlineCombined"
                 
                 float4 clip = UnityObjectToClipPos(v.vertex);
                 float4 vec = UnityObjectToClipPos(float4(_OutlineSize*v.normal.xyz,0));
-                float4 offset = UnityObjectToClipPos(v.vertex +_OutlineSize*v.normal/900);
                 o.vertex = clip+float4(vec.xyz/1000,0); 
-                //o.vertex = offset; 
-                o.to_edge = vec.xy/_OutlineSize;
                 o.uv = v.uv;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                //clip(-1);
-                // sample the texture
+
                 fixed4 col = _Outline;
-                float somth = length(i.to_edge)/200;
-                //return float4(somth,0,0,1);
-                //return float4(somth-360,0,0,0);
-                somth = somth/fwidth(12*somth);
-                return float4(col.xyz,saturate(col.w));
+                return float4(col);
             }
             ENDCG
         }

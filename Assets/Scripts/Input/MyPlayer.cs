@@ -28,12 +28,13 @@ public class MyPlayer : MonoBehaviour
     bool[] down = new bool[2];
     bool[] downdelay = new bool[2];
     Vector2[] pos = new Vector2[2];
+    Vector2[] fakepos = new Vector2[2];
     [SerializeField] Transform[] foot;
     [SerializeField] Transform[] footTargets;
     Vector3[] footSpeeds = {Vector3.zero,Vector3.zero};
     Vector3[] footRots = {Vector3.zero,Vector3.zero};
     Vector3[]steps = {Vector3.forward,Vector3.forward};
-    Vector3[]stepstarts = {Vector3.zero,Vector3.forward};
+    Vector3[]stepstarts;
     [SerializeField] Transform head;
 
     [SerializeField] GameObject suck;
@@ -68,7 +69,9 @@ public class MyPlayer : MonoBehaviour
     bool unhandledTouches;
     float unhandledTouchDelta = 0f;
     float unhandledTouchDeltaBuffer = 0f;
-    
+
+    [SerializeField] GameEvent CalibrationEvent;
+
 
     void Awake()
     {
@@ -93,7 +96,8 @@ public class MyPlayer : MonoBehaviour
         audioSrc = GetComponent<AudioSource>();
         popickAnimator = GetComponentInChildren<Animator>();
         HeadTarget = HeadPos;
-        
+        stepstarts = new Vector3[2]{foot[0].position,foot[1].position};
+        Physics.SyncTransforms();
         for(int i=0;i<2;i++){
             pos[i] = Vector2.zero;
             down[i] = false;
@@ -104,6 +108,7 @@ public class MyPlayer : MonoBehaviour
     }
     void Update()
     {
+        
         
         unhandledTouchDeltaBuffer+=Time.deltaTime;
         if (calibrated){
@@ -132,14 +137,14 @@ public class MyPlayer : MonoBehaviour
             center.y+=3.2f+((truedown[0]?0f:0.8f)+(truedown[1]?0f:0.8f))- (foot[0].position-foot[1].position).magnitude/6f;
             //center += steps[0]/15f+steps[1]/15f;
             center.y+=-2.6f*fall;
-            targetForward = -1*(Quaternion.AngleAxis(Vector2.SignedAngle(Vector2.up,dir),Vector3.up)*(foot[0].position-foot[1].position));
+            if (truedown[0]&&truedown[1]) targetForward = -1*(Quaternion.AngleAxis(Vector2.SignedAngle(Vector2.up,dir),Vector3.up)*(foot[0].position-foot[1].position));
             if (fall==1f) targetForward = (Quaternion.AngleAxis(90f,Vector3.up)*(foot[0].position-foot[1].position));
             transform.forward =  Vector3.SmoothDamp(transform.forward,targetForward.normalized,ref plrCatchUpDir,0.5f);
 
             
             plrCatchUpPos.y *= (1f+2f*Time.deltaTime*just_stepped*math.clamp(0.5f/last_step_time,1f,3f));   
             transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref plrCatchUpPos,0.25f-0.2f*fall);
-
+            print(center);
             head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget+1*transform.forward*fall,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
@@ -234,6 +239,7 @@ public class MyPlayer : MonoBehaviour
         Quaternion turnQ = Quaternion.AngleAxis(-1*turn, Vector3.up);
         if(t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled){
             stepstarts[f] = foot[f].position;
+            fakepos[f] = t.screenPosition;
             down[f] = false;
             foot[f].GetComponent<Collider>().isTrigger=true;
             foot[f].GetComponent<Rigidbody>().isKinematic = true;
@@ -267,22 +273,27 @@ public class MyPlayer : MonoBehaviour
                 time_since_last_step = 0f;
                 
                 if(!lift){
+                    
                     //foot[f].position = foot[1-f].position + turnQ*(foot[f].position - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
-                    Vector3 flat_distance = foot[f].position - foot[1-f].position;
+                    
+                    Vector3 flat_distance = stepstarts[f] - foot[1-f].position;
                     flat_distance.y = 0;
                     flat_distance = flat_distance.normalized;
                     foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[1-f].position + turnQ*flat_distance*ScaleScreenDistance(newdir.magnitude));
+                    
                     steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                     last_step = f;
                 }
                 else{
-                    print("liftend");
+                    
                     //foot[f].position = foot[1-f].position + (stepstarts[f] - foot[1-f].position).normalized*ScaleScreenDistance(newdir.magnitude);
                     Vector3 flat_distance = stepstarts[f] - foot[1-f].position;
                     flat_distance.y = 0;
                     flat_distance = flat_distance.normalized;
-                    foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[1-f].position + flat_distance*ScaleScreenDistance(newdir.magnitude));
+                    Vector3 where = foot[1-f].position + flat_distance*ScaleScreenDistance(newdir.magnitude);
+                    foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(where);
+                    print(foot[f]+" "+where);
                     steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                     lift = false;
@@ -290,6 +301,7 @@ public class MyPlayer : MonoBehaviour
             }
             else{
                 //foot[f].position = stepstarts[f];
+                
                 foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(stepstarts[f]);
                 
             }
@@ -302,23 +314,28 @@ public class MyPlayer : MonoBehaviour
             
         }else{
             if(down[1-f]){
-
                 dir = newdir;
             }
             else{
-                Vector2 estimatedpos = pos[1-f]+(pos[f]-t.screenPosition);
+                Vector2 estimatedpos = fakepos[1-f]+(pos[f]-t.screenPosition);
                 Vector2 estimated_dir = (estimatedpos-t.screenPosition)*MathF.Pow(-1,f);
                 float estimatedturn = Vector2.SignedAngle(dir,estimated_dir);
                 Quaternion estimatedturnQ = Quaternion.AngleAxis(-1*estimatedturn, Vector3.up);
-                //foot[1-f].position = foot[f].position + estimatedturnQ*(foot[1-f].position - foot[f].position).normalized*ScaleScreenDistance(estimated_dir.magnitude);
-                foot[1-f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[f].position + estimatedturnQ*(foot[1-f].position - foot[f].position).normalized*ScaleScreenDistance(estimated_dir.magnitude));
+                Vector3 flat_distance = stepstarts[1-f] - foot[f].position;
+                flat_distance.y = 0;
+                flat_distance = flat_distance.normalized;
+                ////foot[1-f].position = foot[f].position + estimatedturnQ*(foot[1-f].position - foot[f].position).normalized*ScaleScreenDistance(estimated_dir.magnitude);
+                
+                foot[1-f].gameObject.GetComponent<Rigidbody>().MovePosition(foot[f].position + estimatedturnQ*flat_distance*ScaleScreenDistance(estimated_dir.magnitude));
                 steps[1-f] = foot[1-f].position-stepstarts[1-f];
-                dir = estimated_dir;
-                pos[1-f] = estimatedpos;
+                //dir = estimated_dir;
+                fakepos[1-f] = estimatedpos;
+                
             }
         }
         
         pos[f] = t.screenPosition;
+        
         
     }
 
@@ -329,7 +346,6 @@ public class MyPlayer : MonoBehaviour
         
         downdelay[f] = false;
         if (!(down[0] || down[1])){
-            print("LIFT");
             lift = true;
         }
     }
@@ -357,8 +373,7 @@ public class MyPlayer : MonoBehaviour
         while(calibration_timer<2f||count<3||down||minmax[0]>=minmax[1]/2f){
             
             if (networkActiveTouches.Count==2){
-                //print(unhandledTouchDelta);
-                //print("TwoTouches");
+                
                 if (!down){
                     down = true;
                     count +=1;
@@ -380,6 +395,7 @@ public class MyPlayer : MonoBehaviour
             yield return new WaitUntil(HasUnhandledTouches);
         }    
         calibrated = true;
+        CalibrationEvent.Raise();
     }
 
     float ScaleScreenDistance(float d){

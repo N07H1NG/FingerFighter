@@ -44,10 +44,10 @@ public class LittleGuy : MonoBehaviour
                 yield return null;
             }
             else{
-                yield return new WaitForSeconds(10f);
+                yield return new WaitForSeconds(Random.Range(10f,20f));
                 
             }
-            i = (i+1)%4;
+            i = (i+1)%5;
         }
     }
 
@@ -61,8 +61,8 @@ public class LittleGuy : MonoBehaviour
         int i =0;
         while(!found){
             float a = Random.Range(0f,360f);
-            Vector3 trg = transform.position+40f*new Vector3(math.cos(a),0,math.sin(a))+lastdir*10f*farther;
-            found = NavMesh.SamplePosition(trg,out hit, 5f,NavMesh.AllAreas);
+            Vector3 trg = transform.position+30f*new Vector3(math.cos(a),0,math.sin(a))+lastdir*5f*farther;
+            found = NavMesh.SamplePosition(trg,out hit, 15f,NavMesh.AllAreas);
             i++;
             if (i>100){
                 found = true;

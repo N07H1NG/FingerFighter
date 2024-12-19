@@ -7,11 +7,11 @@ using Unity.VisualScripting;
 public class SplitScreenAudioSrcManager : MonoBehaviour
 {
     public static SplitScreenAudioSrcManager singleton { get; private set; }
-    NetworkManager m_NetworkManager;
+    [SerializeField] NetworkManager m_NetworkManager;
 
     List<GameObject> Players = new List<GameObject>();
 
-    public Vector3 average_location;
+    public Vector3[] locations;
     
     // Start is called before the first frame update
     /// <summary>
@@ -19,7 +19,7 @@ public class SplitScreenAudioSrcManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        m_NetworkManager = GetComponent<NetworkManager>();
+
     }
     void Start()
     {
@@ -27,11 +27,7 @@ public class SplitScreenAudioSrcManager : MonoBehaviour
             singleton = this;
         }
         
-        if (m_NetworkManager.IsServer){
-            foreach (NetworkClient clnt in m_NetworkManager.ConnectedClientsList){
-                Players.Add(clnt.PlayerObject.gameObject);
-            }
-        }
+
     }
     
     
@@ -39,9 +35,13 @@ public class SplitScreenAudioSrcManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        average_location = Vector3.zero;
-        foreach (GameObject plr in Players){
-            average_location += plr.transform.position;
+        if (Players.Count>=1){
+            Vector3 fw = Vector3.zero;
+            for (int i = 0;i<Players.Count;i++){
+                locations[i] = Players[i].transform.position;
+                fw += Players[i].transform.forward;
+            }
+            transform.forward = fw/Players.Count;
         }
     }
 
@@ -50,5 +50,6 @@ public class SplitScreenAudioSrcManager : MonoBehaviour
         foreach (NetworkClient clnt in m_NetworkManager.ConnectedClientsList){
             Players.Add(clnt.PlayerObject.gameObject.GetComponentInChildren<MyPlayer>().gameObject);
         }
+        locations = new Vector3[Players.Count];
     }
 }

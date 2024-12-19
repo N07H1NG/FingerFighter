@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
+
 using System.Net;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEngine;
 using Object = UnityEngine.Object;
 using TMPro;
 using UnityEngine.UI;
@@ -36,6 +35,9 @@ public class NetworkMenuHandler : MonoBehaviour
     [SerializeField] MenuLogic menu;
 
     [SerializeField] ColorPicker m_ColorPicker;
+
+    int calibrated = 0;
+    [SerializeField] int player_count = 2;
 
     public Dictionary<ulong,Color> playerColors = new Dictionary<ulong, Color>();
     List<IPAddress> addresses = new List<IPAddress>();
@@ -137,6 +139,7 @@ public class NetworkMenuHandler : MonoBehaviour
 
     public void Connect(){
         if (addresses.Count>0){
+            GetComponent<AudioSource>().Stop();
             Color c = m_ColorPicker.color;
             NetworkManager.Singleton.NetworkConfig.ConnectionData = new byte[3]{(byte)(c.r*255f),(byte)(c.g*255f),(byte)(c.b*255f)};
             DiscoveryResponseData trg = discoveredServers[addresses[ServerDropdown.value]];
@@ -155,6 +158,7 @@ public class NetworkMenuHandler : MonoBehaviour
         m_NetworkManager.StartServer();
         m_Discovery.StartServer();
         menu.ShowServer();
+        calibrated = 0;
         SceneManager.LoadSceneAsync("Playground",mode:LoadSceneMode.Additive);
         
     }
@@ -225,7 +229,8 @@ public class NetworkMenuHandler : MonoBehaviour
         response.PlayerPrefabHash = null;
 
         // Position to spawn the player object (if null it uses default of Vector3.zero)
-        response.Position = Vector3.zero+m_NetworkManager.ConnectedClients.Count*Vector3.forward*5;
+        response.Position =100f*(0.5f-(m_NetworkManager.ConnectedClients.Count))* Vector3.forward;
+        print("Location set to " + response.Position);
 
         // Rotation to spawn the player object (if null it uses the default of Quaternion.identity)
         response.Rotation = Quaternion.identity;
@@ -243,7 +248,7 @@ public class NetworkMenuHandler : MonoBehaviour
         if(m_NetworkManager.IsServer){
             m_NetworkManager.ConnectedClients[clientID].PlayerObject.GetComponent<PlayerDisambigulation>().SetColor(playerColors[clientID]);
             connectionEvent.Raise(m_NetworkManager.ConnectedClients.Count,clientID,playerColors[clientID]);
-            if (m_NetworkManager.ConnectedClients.Count==2){
+            if (m_NetworkManager.ConnectedClients.Count==player_count){
                 StartCoroutine(StartGame());
                 
             }
@@ -258,8 +263,15 @@ public class NetworkMenuHandler : MonoBehaviour
     }
 
     IEnumerator StartGame(){
+        while (calibrated!=player_count){
+            yield return null;
+        }
         yield return new WaitForSeconds(3f);
         startGameEvent.Raise();
+    }
+
+    public void Calibrated(){
+        calibrated += 1;
     }
     
 }

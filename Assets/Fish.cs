@@ -13,6 +13,7 @@ public class Fish : MonoBehaviour
     bool grounded;
     Light flickerLight;
     public ulong LastGuyID;
+    public bool touched = false;
     public float lastGuyPower =0f;
     // Start is called before the first frame update
     void Start()
