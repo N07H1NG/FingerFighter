@@ -78,7 +78,7 @@ Rigidbody:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
@@ -98,6 +98,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 014dd87eb9bf45048991d44de3fdbfc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LastGuyID: 0
+  touched: 0
+  lastGuyPower: 0
 --- !u!82 &6699348647058293338
 AudioSource:
   m_ObjectHideFlags: 0
@@ -219,7 +222,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.43454075, g: 0.72064006, b: 0.8773585, a: 1}
   m_Intensity: 0.8
-  m_Range: 6
+  m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

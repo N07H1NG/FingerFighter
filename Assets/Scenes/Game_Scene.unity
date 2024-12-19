@@ -274,7 +274,7 @@ MonoBehaviour:
   ServerDropdown: {fileID: 1982582719}
   menu: {fileID: 1615994598}
   m_ColorPicker: {fileID: 1309355874}
-  player_count: 2
+  player_count: 1
 --- !u!82 &273590099
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1109,7 +1109,7 @@ PrefabInstance:
       objectReference: {fileID: 273590096}
     - target: {fileID: 6546413645203976935, guid: dd55ba3f6c83c9149b163ca069ade304, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00021362305
+      value: 0.00033569336
       objectReference: {fileID: 0}
     - target: {fileID: 7665154930313586457, guid: dd55ba3f6c83c9149b163ca069ade304, type: 3}
       propertyPath: m_AnchorMax.x

@@ -7,7 +7,10 @@ public class BublikiGameMode : MonoBehaviour
 {
     AudioSource audioSource;
     AudioSource bell;
+    [SerializeField] AudioClip shortbell, longbell;
     [SerializeField] MyAudioCue clockCue;
+
+    //Dictionary<LittleGuy,ulong>
     public UnityEvent ActualStart;
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
@@ -27,10 +30,11 @@ public class BublikiGameMode : MonoBehaviour
             yield return new WaitForSeconds(1f);
             
         }
+        bell.clip = shortbell;
         bell.Play();
-        yield return new WaitForSeconds(60f);
+        yield return new WaitForSeconds(30f);
         ActualStart.Invoke();
-        audioSource.volume = 0.5f;
+        audioSource.volume = 0.2f;
         for(int i=0;i<12*60-5;i++){
             audioSource.PlayOneShot(clockCue.GetRandomClip());
             yield return new WaitForSeconds(1f);
@@ -40,6 +44,7 @@ public class BublikiGameMode : MonoBehaviour
             audioSource.PlayOneShot(clockCue.GetRandomClip());
             yield return new WaitForSeconds(1f);
         }
+        bell.clip = longbell;
         bell.Play();
 
     }
@@ -47,4 +52,10 @@ public class BublikiGameMode : MonoBehaviour
     public void StartGame(){
         StartCoroutine(Game());
     }
+
+    public void EndGame(){
+
+    }
+
+    //public void ReceiveResult;
 }

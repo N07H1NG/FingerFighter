@@ -12,6 +12,7 @@ public class LittleGuy : MonoBehaviour
     NavMeshAgent agent;
     Vector3 lastdir = Vector3.zero;
     RaycastHit downhit = new RaycastHit();
+    [SerializeField] BublikiGameMode gameMode;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +27,7 @@ public class LittleGuy : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-
+        Physics.Raycast(transform.position,Vector3.down,out downhit);
         transform.rotation = Quaternion.FromToRotation(transform.up,downhit.normal)*transform.rotation;        
       
     }
@@ -73,4 +74,10 @@ public class LittleGuy : MonoBehaviour
         lastdir = (hit.position-transform.position).normalized;
         agent.SetDestination(hit.position);
     }
+
+    public void Finish(){
+        
+    }
+
+
 }

@@ -96,8 +96,7 @@ public class MyPlayer : MonoBehaviour
         audioSrc = GetComponent<AudioSource>();
         popickAnimator = GetComponentInChildren<Animator>();
         HeadTarget = HeadPos;
-        stepstarts = new Vector3[2]{foot[0].position,foot[1].position};
-        Physics.SyncTransforms();
+        UpdateFeet();
         for(int i=0;i<2;i++){
             pos[i] = Vector2.zero;
             down[i] = false;
@@ -144,7 +143,7 @@ public class MyPlayer : MonoBehaviour
             
             plrCatchUpPos.y *= (1f+2f*Time.deltaTime*just_stepped*math.clamp(0.5f/last_step_time,1f,3f));   
             transform.position = Vector3.SmoothDamp(transform.position,center+transform.forward.normalized,ref plrCatchUpPos,0.25f-0.2f*fall);
-            print(center);
+            
             head.localPosition = Vector3.SmoothDamp(head.localPosition,HeadTarget+1*transform.forward*fall,ref headSpeed,0.2f);
             head.up = head.position-transform.position;
             //head.forward = transform.rotation*HeadTarget;
@@ -293,7 +292,6 @@ public class MyPlayer : MonoBehaviour
                     flat_distance = flat_distance.normalized;
                     Vector3 where = foot[1-f].position + flat_distance*ScaleScreenDistance(newdir.magnitude);
                     foot[f].gameObject.GetComponent<Rigidbody>().MovePosition(where);
-                    print(foot[f]+" "+where);
                     steps[f] = foot[f].position-stepstarts[f];
                     dir = newdir;
                     lift = false;
@@ -410,5 +408,12 @@ public class MyPlayer : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public void UpdateFeet(){
+        foot[0].position = transform.position + new Vector3(-1.4f,-3f,0f);
+        foot[1].position = transform.position + new Vector3(1.4f,-3f,0f);
+        stepstarts = new Vector3[2]{foot[0].position,foot[1].position};
+        Physics.SyncTransforms();
     }
 }

@@ -38,9 +38,6 @@ public class SuckControl : MonoBehaviour
         
         transform.rotation = boneBind.rotation*rotOffset;
         transform.position = boneBind.position;
-        Debug.DrawLine(transform.position, transform.position + transform.forward.normalized*-1f*maxdist, Color.magenta);
-        print(maxdist);
-        
     }
 
     /// <summary>
