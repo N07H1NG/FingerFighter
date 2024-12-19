@@ -13,8 +13,6 @@ public class Pond : MonoBehaviour
     Color[] colors = new Color[4];
     [SerializeField]TMP_Text[] text; 
     [SerializeField]SkinnedMeshRenderer body;
-    Vector3 correction = Vector3.zero;
-    Vector3 speed = Vector3.zero;
     int maxScore = 0;
     bool draw = true;
 
@@ -39,7 +37,7 @@ public class Pond : MonoBehaviour
                 }
             }
             foreach(TMP_Text tComp in text){
-                tComp.transform.forward = dirtext;
+                tComp.transform.forward = -1*dirtext;
             }
         }
     }

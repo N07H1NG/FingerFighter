@@ -9,14 +9,17 @@ public class BublikiGameMode : MonoBehaviour
 {
     AudioSource audioSource;
     AudioSource bell;
-    [SerializeField] AudioClip shortbell, longbell;
+    [SerializeField] AudioClip shortbell, longbell,fireworkSFX;
     [SerializeField] MyAudioCue clockCue;
 
     //Dictionary<LittleGuy,ulong>
     public UnityEvent ActualStart;
+    [SerializeField] GlobalScore scoreGlobal;
 
+    public GameEvent fin;
+    [SerializeField] GameObject fireworks;
     ulong[] players;
-    List<LittleGuy> guys;
+    public List<LittleGuy> guys = new List<LittleGuy>();
     List<BublikResult> results = new List<BublikResult>();
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
@@ -39,7 +42,7 @@ public class BublikiGameMode : MonoBehaviour
         }
         bell.clip = shortbell;
         bell.Play();
-        yield return new WaitForSeconds(30f);
+        yield return new WaitForSeconds(22f);
         ActualStart.Invoke();
         audioSource.volume = 0.2f;
         for(int i=0;i<12*60-5;i++){
@@ -53,6 +56,7 @@ public class BublikiGameMode : MonoBehaviour
         }
         bell.clip = longbell;
         bell.Play();
+        fin.Raise();
 
     }
 
@@ -60,19 +64,44 @@ public class BublikiGameMode : MonoBehaviour
         StartCoroutine(Game());
     }
 
-    public void EndGame(){
-
+    IEnumerator EndGameCount(){
+        StartCoroutine(scoreGlobal.Rise());
+        yield return new WaitUntil(scoreGlobal.InPlace);
+        foreach(BublikResult res in results){
+            if(!res.draw){
+                int index = scoreGlobal.order.IndexOf(res.ID);
+                res.guy.FlyToward(scoreGlobal.text[index].transform.position,scoreGlobal,res.ID,false);
+            }
+            else{
+                
+                res.guy.FlyToward(scoreGlobal.transform.position,scoreGlobal,res.ID,true);
+            }
+        }
     }
 
     public void ReceiveResult(BublikResult res)
     {
         results.Add(res);
         if (results.Count == guys.Count){
-            EndGame();
+            StartCoroutine(EndGameCount());
         }
     }
 
     public void RegisterGuy(LittleGuy guy){
         guys.Add(guy);
+    }
+
+    public void CountingDone(){
+        Instantiate(fireworks);
+    }
+
+    IEnumerator Fireworks(){
+        audioSource.clip =fireworkSFX;
+        audioSource.loop = true;
+        audioSource.Play();
+        while (true){
+            Instantiate(fireworks,Random.insideUnitSphere*200f+Vector3.up*100f,Quaternion.identity);
+            yield return new WaitForSeconds(10f);
+        }
     }
 }

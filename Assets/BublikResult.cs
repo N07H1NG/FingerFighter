@@ -4,10 +4,10 @@ using UnityEngine;
 
 public struct BublikResult 
 {
-    LittleGuy guy;
-    ulong ID;
-    int score;
-    bool draw;
+    public LittleGuy guy;
+    public ulong ID;
+    public int score;
+    public bool draw;
 
     public BublikResult(LittleGuy g,ulong favID,int scr, bool isDraw){
         guy = g;

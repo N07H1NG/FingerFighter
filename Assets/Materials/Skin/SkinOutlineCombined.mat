@@ -31,7 +31,7 @@ Material:
     m_Floats:
     - _Glossiness: 0.126
     - _Metallic: 0
-    - _OutlineSize: 6.62
+    - _OutlineSize: 2
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Outline: {r: 0.8203672, g: 1, b: 0.8160377, a: 1}
