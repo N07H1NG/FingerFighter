@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Unity.Netcode;
+using System.Linq;
 
 public class BublikiGameMode : MonoBehaviour
 {
@@ -12,6 +14,10 @@ public class BublikiGameMode : MonoBehaviour
 
     //Dictionary<LittleGuy,ulong>
     public UnityEvent ActualStart;
+
+    ulong[] players;
+    List<LittleGuy> guys;
+    List<BublikResult> results = new List<BublikResult>();
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
     /// any of the Update methods is called the first time.
@@ -20,6 +26,7 @@ public class BublikiGameMode : MonoBehaviour
     {
         audioSource = GetComponents<AudioSource>()[0];
         bell = GetComponents<AudioSource>()[1];
+        players = NetworkManager.Singleton.ConnectedClientsIds.ToArray();
         
     }
     // Start is called before the first frame update
@@ -57,5 +64,15 @@ public class BublikiGameMode : MonoBehaviour
 
     }
 
-    //public void ReceiveResult;
+    public void ReceiveResult(BublikResult res)
+    {
+        results.Add(res);
+        if (results.Count == guys.Count){
+            EndGame();
+        }
+    }
+
+    public void RegisterGuy(LittleGuy guy){
+        guys.Add(guy);
+    }
 }

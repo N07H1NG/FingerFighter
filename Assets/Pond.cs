@@ -120,6 +120,13 @@ public class Pond : MonoBehaviour
 
     public void TimeOver(){
         GetComponent<Collider>().enabled = false;
+        
+    }
+
+    public void GetResults(out ulong favoriteGuy,out int score, out bool isDraw){
+        favoriteGuy = favorite;
+        score = maxScore;
+        isDraw = draw;
     }
 
 

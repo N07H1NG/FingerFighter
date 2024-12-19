@@ -21,6 +21,7 @@ public class LittleGuy : MonoBehaviour
         agent.updateUpAxis = false;
         animator = GetComponentInChildren<Animator>();
         StartCoroutine(Roam());
+        gameMode.RegisterGuy(this);
         
     }
 
@@ -76,7 +77,8 @@ public class LittleGuy : MonoBehaviour
     }
 
     public void Finish(){
-        
+        GetComponentInChildren<Pond>().GetResults(out ulong fav,out int scr, out bool draw);
+        gameMode.ReceiveResult(new BublikResult(this,fav,scr,draw));
     }
 
 

@@ -968,6 +968,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4045896773627690540, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
+      propertyPath: gameMode
+      value: 
+      objectReference: {fileID: 1262119295}
     - target: {fileID: 7421995050621317956, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
       propertyPath: m_LocalPosition.x
       value: 107.1
@@ -1035,6 +1039,10 @@ PrefabInstance:
       propertyPath: pondNumber
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4045896773627690540, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
+      propertyPath: gameMode
+      value: 
+      objectReference: {fileID: 1262119295}
     - target: {fileID: 7421995050621317956, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
       propertyPath: m_LocalPosition.x
       value: -37.975784
@@ -1974,6 +1982,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4045896773627690540, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
+      propertyPath: gameMode
+      value: 
+      objectReference: {fileID: 1262119295}
     - target: {fileID: 7421995050621317956, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
       propertyPath: m_LocalPosition.x
       value: -90
@@ -2385,6 +2397,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4045896773627690540, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
+      propertyPath: gameMode
+      value: 
+      objectReference: {fileID: 1262119295}
     - target: {fileID: 7421995050621317956, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
       propertyPath: m_LocalPosition.x
       value: -14.6
@@ -2554,6 +2570,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4045896773627690540, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
+      propertyPath: gameMode
+      value: 
+      objectReference: {fileID: 1262119295}
     - target: {fileID: 7421995050621317956, guid: d7de9ea4cff7fc7438ed07cecae34455, type: 3}
       propertyPath: m_LocalPosition.x
       value: 77

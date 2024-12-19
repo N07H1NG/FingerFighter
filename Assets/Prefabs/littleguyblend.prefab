@@ -1808,6 +1808,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f51de602e92f718469345e0722abf053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameMode: {fileID: 0}
 --- !u!114 &3565240315220814869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1827,6 +1828,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2625904519885026324}
         m_TargetAssemblyTypeName: Pond, Assembly-CSharp
         m_MethodName: TimeOver
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4045896773627690540}
+        m_TargetAssemblyTypeName: LittleGuy, Assembly-CSharp
+        m_MethodName: Finish
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
