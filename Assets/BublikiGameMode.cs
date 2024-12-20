@@ -100,7 +100,7 @@ public class BublikiGameMode : MonoBehaviour
         audioSource.loop = true;
         audioSource.Play();
         while (true){
-            Instantiate(fireworks,Random.insideUnitSphere*200f+Vector3.up*100f,Quaternion.identity);
+            Instantiate(fireworks,Random.insideUnitSphere*100f+Vector3.up*200f,Quaternion.identity);
             yield return new WaitForSeconds(10f);
         }
     }
