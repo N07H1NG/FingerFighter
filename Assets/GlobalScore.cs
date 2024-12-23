@@ -44,7 +44,7 @@ public class GlobalScore : MonoBehaviour
         target.y = 85f;
         Vector3 speed = Vector3.zero;
         while(transform.position.y<80f){
-            transform.position = Vector3.SmoothDamp(transform.position,target,ref speed,10f);
+            transform.position = Vector3.SmoothDamp(transform.position,target,ref speed,8f);
             yield return null;
         }
         risen = true;

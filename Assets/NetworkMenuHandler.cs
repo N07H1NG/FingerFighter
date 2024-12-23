@@ -7,8 +7,10 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Object = UnityEngine.Object;
 using TMPro;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+
+
+
 
 
 
@@ -25,6 +27,7 @@ public class NetworkMenuHandler : MonoBehaviour
     public GameEvent playercountEvent;
 
     public PlayerConnectionEvent connectionEvent;
+    public PlayerConnectionEvent disconnectEvent;
     public bool splitOrientation = true;
     
     [SerializeField]
@@ -48,6 +51,20 @@ public class NetworkMenuHandler : MonoBehaviour
     {
         m_NetworkManager.Shutdown();
     }
+
+    public void Quit(){
+        if (m_NetworkManager.IsServer){
+            StopServer();
+
+        }
+        else if (m_NetworkManager.IsClient){
+            m_Discovery.StopDiscovery();
+            m_NetworkManager.Shutdown();
+            menu.ShowGeneral();
+        }
+        else Application.Quit();
+        
+    }
     void Awake()
     {
         m_Discovery = GetComponent<ExampleNetworkDiscovery>();
@@ -56,17 +73,7 @@ public class NetworkMenuHandler : MonoBehaviour
         
     }
 
-    #if UNITY_EDITOR
-    void OnValidate()
-    {
-        if (m_Discovery == null) // This will only happen once because m_Discovery is a serialize field
-        {
-            m_Discovery = GetComponent<ExampleNetworkDiscovery>();
-            UnityEventTools.AddPersistentListener(m_Discovery.OnServerFound, OnServerFound);
-            Undo.RecordObjects(new Object[] { this, m_Discovery}, "Set NetworkDiscovery");
-        }
-    }
-    #endif
+    
 
 
     /// <summary>
@@ -76,7 +83,7 @@ public class NetworkMenuHandler : MonoBehaviour
     {
         m_NetworkManager.OnClientConnectedCallback += ClientConnected;
         m_NetworkManager.OnClientDisconnectCallback += ClientDisconnect;
-        m_NetworkManager.OnClientStopped += ClientDisconnect;
+        m_NetworkManager.OnClientStopped += ClientStopped;
     }
 
     /// <summary>
@@ -87,7 +94,7 @@ public class NetworkMenuHandler : MonoBehaviour
         
         m_NetworkManager.OnClientConnectedCallback -= ClientConnected;
         m_NetworkManager.OnClientDisconnectCallback -= ClientDisconnect;
-        m_NetworkManager.OnClientStopped -= ClientDisconnect;
+        m_NetworkManager.OnClientStopped -= ClientStopped;
     }
     void Start()
     {
@@ -108,6 +115,7 @@ public class NetworkMenuHandler : MonoBehaviour
             srvrList.Add($"{discoveredServers[address].ServerName}\n{address.ToString()}");
         }
         ServerDropdown.AddOptions(srvrList);
+        print("added option");
 
     }
 
@@ -125,6 +133,7 @@ public class NetworkMenuHandler : MonoBehaviour
         addresses.Clear();
         ServerDropdown.ClearOptions();
         m_Discovery.ClientBroadcast(new DiscoveryBroadcastData());
+        print("refresh");
     }
 
     public void Discover(){
@@ -134,6 +143,7 @@ public class NetworkMenuHandler : MonoBehaviour
         ServerDropdown.ClearOptions();
         m_Discovery.StartClient();
         m_Discovery.ClientBroadcast(new DiscoveryBroadcastData());
+        print("Discovering");
         
     }
 
@@ -154,6 +164,7 @@ public class NetworkMenuHandler : MonoBehaviour
     }
 
     public void StartServer(){
+        print("Startedserver");
         m_NetworkManager.ConnectionApprovalCallback = CheckApproval;
         m_NetworkManager.StartServer();
         m_Discovery.StartServer();
@@ -185,6 +196,9 @@ public class NetworkMenuHandler : MonoBehaviour
 
     void ClientConnectinsChanged(ulong clientID){
         if (m_NetworkManager.IsServer){
+            foreach(NetworkClient playerClient in m_NetworkManager.ConnectedClientsList){
+                playerClient.PlayerObject.GetComponent<PlayerDisambigulation>().RecalculateIndex();
+            }
             menu.PositionServerSideMenu();
             playercountEvent.Raise();
         }
@@ -195,14 +209,13 @@ public class NetworkMenuHandler : MonoBehaviour
     }
 
     public void StopServer(){
-        
-        m_Discovery.StopDiscovery();
         m_NetworkManager.Shutdown();
+        m_Discovery.StopDiscovery();
         menu.ShowGeneral();
         SceneManager.UnloadSceneAsync("Playground");
     }
 
-    public void ClientDisconnect(bool host){
+    public void ClientStopped(bool host){
         menu.ShowGeneral();
     }
 
@@ -258,7 +271,7 @@ public class NetworkMenuHandler : MonoBehaviour
     }
 
     void ClientDisconnect(ulong clientID){
-        Debug.Log("Player Disconnected");
+        disconnectEvent.Raise(m_NetworkManager.ConnectedClientsList.Count,clientID,playerColors[clientID]);
         ClientConnectinsChanged(clientID);
     }
 
@@ -266,7 +279,6 @@ public class NetworkMenuHandler : MonoBehaviour
         while (calibrated!=player_count){
             yield return null;
         }
-        yield return new WaitForSeconds(3f);
         startGameEvent.Raise();
     }
 

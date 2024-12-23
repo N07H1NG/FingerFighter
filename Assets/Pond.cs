@@ -10,7 +10,7 @@ public class Pond : MonoBehaviour
 {
     Dictionary<ulong,int> score =  new Dictionary<ulong, int>();
     List<ulong> order = new List<ulong>();
-    Color[] colors = new Color[4];
+    Dictionary<ulong,Color> colors = new Dictionary<ulong, Color>();
     [SerializeField]TMP_Text[] text; 
     [SerializeField]SkinnedMeshRenderer body;
     int maxScore = 0;
@@ -86,7 +86,7 @@ public class Pond : MonoBehaviour
         if (draw){
                 SetColor(Color.white);
         }else{
-            SetColor(colors[order.IndexOf(favorite)]);
+            SetColor(colors[favorite]);
         }
     }
 
@@ -101,19 +101,10 @@ public class Pond : MonoBehaviour
         Color.RGBToHSV(playerColor,out float hue,out float sat,out float val);
         Color outlinecol = Color.HSVToRGB(hue,1-math.pow(1-sat,3),val+0.4f*math.sign(0.5f-val));
         
-        if (playerCount-1==0){
-            
-            
-            text[0].fontSharedMaterial.SetColor("_FaceColor",playerColor);
-            text[0].fontSharedMaterial.SetColor("_OutlineColor",outlinecol);
-            colors[0] = playerColor;
-        }
-        else if (playerCount-1==1){
-            
-            text[1].fontSharedMaterial.SetColor("_FaceColor",playerColor);
-            text[1].fontSharedMaterial.SetColor("_OutlineColor",outlinecol);
-            colors[1] = playerColor;
-        }
+        text[playerCount-1].fontSharedMaterial.SetColor("_FaceColor",playerColor);
+        text[playerCount-1].fontSharedMaterial.SetColor("_OutlineColor",outlinecol);
+        colors[ClientID] = playerColor;
+
     }
 
     public void TimeOver(){
@@ -127,5 +118,16 @@ public class Pond : MonoBehaviour
         isDraw = draw;
     }
 
+    public void PlayerDisconnect(int playerCount,ulong ClientID,Color playerColor){
+        order.Remove(ClientID);
+        score.Remove(ClientID);
+        for(int id=0;id<order.Count; id++){
+            Color.RGBToHSV(colors[order[id]],out float hue,out float sat,out float val);
+            Color outlinecol = Color.HSVToRGB(hue,1-math.pow(1-sat,3),val+0.4f*math.sign(0.5f-val));
+            text[id].fontSharedMaterial.SetColor("_FaceColor",colors[order[id]]);
+            text[0].fontSharedMaterial.SetColor("_OutlineColor",outlinecol);
+            text[id].text = score[order[id]].ToString();
+        }
+    }
 
 }

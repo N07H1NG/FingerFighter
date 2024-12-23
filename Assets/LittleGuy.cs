@@ -14,6 +14,7 @@ public class LittleGuy : MonoBehaviour
     RaycastHit downhit = new RaycastHit();
     [SerializeField] BublikiGameMode gameMode;
     Vector3 startPos;
+    bool flying = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,15 +32,17 @@ public class LittleGuy : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Physics.Raycast(transform.position,Vector3.down,out downhit);
-        transform.rotation = Quaternion.FromToRotation(transform.up,downhit.normal)*transform.rotation;        
-      
+        if(!flying){
+            
+            Physics.Raycast(transform.position,Vector3.down,out downhit,200f,1 << 7);
+            transform.rotation = Quaternion.FromToRotation(transform.up,downhit.normal)*transform.rotation;        
+        }
     }
 
     IEnumerator Roam(){
         int i = 0;
         while(true){
-            print("COROUTINE BABY");
+            
             ChooseTarget(i);
             yield return null;
             animator.SetBool("Running",true);
@@ -117,6 +120,7 @@ public class LittleGuy : MonoBehaviour
     public void FlyToward(Vector3 pos,GlobalScore scr,ulong id,bool dr){
         StopAllCoroutines();
         agent.enabled = false;
+        flying = true;
         StartCoroutine(Fly(pos,scr,id,dr));
     }
 

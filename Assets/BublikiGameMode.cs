@@ -76,6 +76,7 @@ public class BublikiGameMode : MonoBehaviour
                 
                 res.guy.FlyToward(scoreGlobal.transform.position,scoreGlobal,res.ID,true);
             }
+            yield return new WaitForSeconds(1f);
         }
     }
 
@@ -92,7 +93,7 @@ public class BublikiGameMode : MonoBehaviour
     }
 
     public void CountingDone(){
-        Instantiate(fireworks);
+        StartCoroutine(Fireworks());
     }
 
     IEnumerator Fireworks(){

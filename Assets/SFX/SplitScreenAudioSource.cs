@@ -26,12 +26,12 @@ public class SplitScreenAudioSource : MonoBehaviour
         {
             SplitScreenAudioSrcManager src = SplitScreenAudioSrcManager.singleton;
             if(src.locations.Length>=1){
-                float max = (src.locations[0]-transform.position).magnitude;
+                float res = (src.locations[0]-transform.position).magnitude;
                 for(int i=1;i<src.locations.Length;i++){
-                    max = math.max((src.locations[i]-transform.position).magnitude,max);
+                    res = math.min((src.locations[i]-transform.position).magnitude,res);
                 }
                 foreach(AudioSource srcComp in audioSrc){
-                    srcComp.volume = vol[srcComp]*(1-math.clamp(max/srcComp.maxDistance,0,1));
+                    srcComp.volume = vol[srcComp]*(1-math.clamp(res/srcComp.maxDistance,0,1));
                 }
                 
             }

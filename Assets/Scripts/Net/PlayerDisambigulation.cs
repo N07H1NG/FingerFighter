@@ -34,4 +34,9 @@ public class PlayerDisambigulation : NetworkBehaviour
     public void SetColor(Color col){
         skinnedMesh.material.SetColor("_Outline",col);
     }
+
+    public void RecalculateIndex(){
+        playerIndex = Array.IndexOf(NetworkManager.ConnectedClientsIds.ToArray(),OwnerClientId);
+        PositionCamera(NetworkManager.GetComponent<NetworkMenuHandler>().splitOrientation);
+    }
 }

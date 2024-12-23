@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 7289829699294791615}
   - component: {fileID: 2625904519885026324}
   - component: {fileID: 7332412761800351644}
+  - component: {fileID: 9056912543071220131}
   m_Layer: 0
   m_Name: Pond
   m_TagString: Untagged
@@ -304,6 +305,34 @@ MonoBehaviour:
       - m_Target: {fileID: 2625904519885026324}
         m_TargetAssemblyTypeName: Pond, Assembly-CSharp
         m_MethodName: PlayerConnect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &9056912543071220131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967362550604834973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4e08632824db14db666c3f20345fb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: ca39c8328c8632746b7476a2bc7942f4, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2625904519885026324}
+        m_TargetAssemblyTypeName: Pond, Assembly-CSharp
+        m_MethodName: PlayerDisconnect
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

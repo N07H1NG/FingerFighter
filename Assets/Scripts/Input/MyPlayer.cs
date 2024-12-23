@@ -2,15 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Mathematics;
-using Unity.Netcode;
 using Unity.VisualScripting;
+
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch;
-using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.UIElements;
+
 using Touch = NetworkTouchData;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
@@ -38,7 +35,7 @@ public class MyPlayer : MonoBehaviour
     [SerializeField] Transform head;
 
     [SerializeField] GameObject suck;
-
+    [SerializeField] TMP_Text[] calibrationText;
     Vector3 plrCatchUpPos = Vector3.zero;
     Vector3 plrCatchUpDir = Vector3.zero;
     Animator popickAnimator;
@@ -368,17 +365,20 @@ public class MyPlayer : MonoBehaviour
         bool down =false;
         int count = 0;
         float calibration_timer = 0f;
-        while(calibration_timer<2f||count<3||down||minmax[0]>=minmax[1]/2f){
+        bool done = false;
+        
+        while(!done){
             
             if (networkActiveTouches.Count==2){
-                
+                calibration_timer+=unhandledTouchDelta;
                 if (!down){
                     down = true;
                     count +=1;
+                    
                 }
                 
                 
-                calibration_timer+=unhandledTouchDelta;
+                
                 float d =(networkActiveTouches[0].screenPosition - networkActiveTouches[1].screenPosition).magnitude;
                 if (d<minmax[0]||minmax[0]==0){
                     minmax[0] = d;
@@ -388,11 +388,22 @@ public class MyPlayer : MonoBehaviour
                 }
             }
             else{
+                calibrationText[1].text = (3-count%3).ToString();
+                if (count==3){
+                    calibrationText[0].text = "Now place your fingers as close to each other as you can 3 times";
+                }
+                if (count==6){
+                    calibrationText[0].text = "You're all set. Waiting for your partner";
+                    calibrationText[1].enabled = false;
+                    done = true;
+                }
+                
                 down = false;
+                
             }
             yield return new WaitUntil(HasUnhandledTouches);
         }    
-        calibrated = true;
+        
         CalibrationEvent.Raise();
     }
 
@@ -415,5 +426,10 @@ public class MyPlayer : MonoBehaviour
         foot[1].position = transform.position + new Vector3(1.4f,-3f,0f);
         stepstarts = new Vector3[2]{foot[0].position,foot[1].position};
         Physics.SyncTransforms();
+    }
+
+    public void AllCalibrated(){
+        calibrated = true;
+        calibrationText[0].transform.parent.gameObject.SetActive(false);
     }
 }
